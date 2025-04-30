@@ -22,7 +22,7 @@
     }
 </style>
 <div>
-    <h1 class="mb-4"><b>Oke Toys - Dashboard</b></h1>
+    <h3 class="mb-4"><b>Oke Toys - Dashboard</b></h3>
     <div class="row">
         <div class="col-sm-4 mb-3 mb-sm-5">
           <div class="card card-style">
@@ -81,10 +81,10 @@
     const weeklyChart = new Chart(weeklyChartCtx, {
       type: 'bar',
       data: {
-        labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'],
+        labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
         datasets: [{
           label: 'Penjualan (Rp)',
-          data: [1500000, 1200000, 1400000, 800000, 1600000],
+          data: [1500000, 1200000, 1400000, 800000, 1600000, 1000000],
           backgroundColor: '#B1C4FF',
           borderColor: '#8EABFF',
           borderWidth: 1
