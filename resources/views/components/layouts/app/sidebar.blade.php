@@ -15,7 +15,7 @@
                 padding: 10px;
                 background-color: #2C3245;
                 position: fixed;
-                overflow: visible;
+                overflow-y: auto;
             }
 
             .sidebar button, .sidebar a {
@@ -61,6 +61,55 @@
             .content {
                 margin-left: 90px;
                 width: calc(100% - 90px);
+                z-index: -1;
+            }
+
+            @media only screen and (min-width: 900px) {
+                .nav-mobile {
+                    display: none;
+                }
+            }
+
+            @media only screen and (max-width: 900px) {
+                .sidebar {
+                    display: none;
+                }
+
+                .navbar {
+                    background-color: #2C3245;
+                    position: fixed;
+                    width: 100%;
+                    z-index: 1;
+                }
+
+                .navbar-brand, .nav-item, .nav-link {
+                    color: white;
+                }
+
+                .nav-item {
+                    padding-left: 10px;
+                }
+
+                .active-mobile {
+                    color: rgb(91, 206, 255);
+                    font-weight: 600;
+                    padding: 5px 0px 5px 0px;
+                    border-radius: 10px;
+                }
+
+                .dropdown-menu {
+                    background-color: transparent;
+                    border: none;
+                    padding-left: 10px;
+                }
+
+                .content-mobile {
+                    margin: 50px 8px 8px 8px;
+                }
+
+                .content {
+                    display: none;
+                }
             }
         </style>
     </head>
@@ -131,6 +180,61 @@
         </div>
         <div class="content">
             {{ $slot }}
+        </div>
+
+        <div class="nav-mobile">
+            <nav class="navbar navbar-expand-lg" data-bs-theme="dark">
+                <div class="container-fluid">
+                    <span class="navbar-brand"><b>Oke Toys</b></span>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('dashboard') ? 'active-mobile' : '' }}" href="{{ route('dashboard') }}" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Transaksi
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="nav-link" href="#">Kasir</a></li>
+                                    <li><a class="nav-link" href="#">Stok Masuk</a></li>
+                                    <li><a class="nav-link" href="#">Diskon Reseller</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Laporan
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="nav-link" href="#">Laporan Penjualan</a></li>
+                                    <li><a class="nav-link" href="#">Laporan Barang</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Produk</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Kategori</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Data Lainnya
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="nav-link" href="#">Data Supplier</a></li>
+                                    <li><a class="nav-link" href="#">Data User</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="content-mobile">
+                {{ $slot }}
+            </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     </body>
