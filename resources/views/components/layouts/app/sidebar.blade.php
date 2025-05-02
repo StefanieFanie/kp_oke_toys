@@ -154,13 +154,13 @@
                     </svg>
                 </a>
                 <div class="dropend">
-                    <a data-bs-toggle="dropdown" aria-expanded="false">
-                        <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="white" class="bi bi-cart" viewBox="0 0 16 16">
+                    <a class="{{ request()->routeIs('kasir') ? 'active' : '' }}" data-bs-toggle="dropdown" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
                             <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
                         </svg>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Kasir</a></li>
+                        <li><a class="dropdown-item" href="{{ route('kasir') }}" :current="request()->routeIs('kasir')" wire:navigate>Kasir</a></li>
                         <li><a class="dropdown-item" href="#">Stok Masuk</a></li>
                         <li><a class="dropdown-item" href="#">Diskon Reseller</a></li>
                     </ul>
@@ -177,7 +177,7 @@
                         <li><a class="dropdown-item" href="#">Laporan Barang</a></li>
                     </ul>
                 </div>
-                <a class="{{ request()->routeIs('produk') ? 'active' : '' }}" href="{{ route('produk') }}" :current="request()->routeIs('produk')" wire:navigate>
+                <a class="{{ request()->routeIs('*produk') ? 'active' : '' }}" href="{{ route('produk') }}" :current="request()->routeIs('produk')" wire:navigate>
                     <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16">
                         <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
                     </svg>
@@ -226,11 +226,11 @@
                                 <a class="nav-link {{ request()->routeIs('dashboard') ? 'active-small' : '' }}" href="{{ route('dashboard') }}" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle {{ request()->routeIs('kasir') ? 'active-small' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Transaksi
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="nav-link" href="#">Kasir</a></li>
+                                    <li><a class="nav-link" href="{{ route('kasir') }}" :current="request()->routeIs('kasir')" wire:navigate>Kasir</a></li>
                                     <li><a class="nav-link" href="#">Stok Masuk</a></li>
                                     <li><a class="nav-link" href="#">Diskon Reseller</a></li>
                                 </ul>
