@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LoginController;
 use App\Livewire\Dashboard;
+use App\Livewire\Produk\Produk;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -16,6 +17,10 @@ Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->n
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth'])
     ->name('dashboard');
+
+Route::get('produk', Produk::class)
+    ->middleware(['auth'])
+    ->name('produk');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
