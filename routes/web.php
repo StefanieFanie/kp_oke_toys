@@ -3,6 +3,7 @@
 use App\Http\Controllers\LoginController;
 use App\Livewire\Dashboard;
 use App\Livewire\Produk\Produk;
+use App\Livewire\Kasir;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -21,7 +22,9 @@ Route::get('dashboard', Dashboard::class)
 Route::get('produk', Produk::class)
     ->middleware(['auth'])
     ->name('produk');
-
+    Route::get('kasir', Kasir::class)
+    ->middleware(['auth'])
+    ->name('kasir');
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
