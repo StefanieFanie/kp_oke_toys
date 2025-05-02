@@ -16,6 +16,7 @@
                 background-color: #2C3245;
                 position: fixed;
                 overflow: visible;
+                z-index: 1000;
             }
 
             .scroll-sidebar {
@@ -64,9 +65,17 @@
                 color: #2C3245;
             }
 
+            .button-logout {
+                width: 85%;
+                display: block;
+                padding: 12px;
+                background-color: transparent;
+                border: none;
+            }
+
             .content {
-                margin-left: 90px;
-                width: calc(100% - 90px);
+                padding: 20px 0 0 120px;
+                width: calc(100% - 30px);
                 z-index: -1;
             }
 
@@ -83,7 +92,8 @@
 
                 .navbar {
                     background-color: #2C3245;
-                    position: fixed;
+                    position: sticky;
+                    top: 0;
                     width: 100%;
                     z-index: 1;
                 }
@@ -123,7 +133,7 @@
                 }
 
                 .content-small {
-                    margin: 50px 8px 8px 8px;
+                    margin: 12px;
                 }
 
                 .content {
@@ -167,8 +177,8 @@
                         <li><a class="dropdown-item" href="#">Laporan Barang</a></li>
                     </ul>
                 </div>
-                <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="white" class="bi bi-box" viewBox="0 0 16 16">
+                <a class="{{ request()->routeIs('produk') ? 'active' : '' }}" href="{{ route('produk') }}" :current="request()->routeIs('produk')" wire:navigate>
+                    <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16">
                         <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
                     </svg>
                 </a>
@@ -190,8 +200,8 @@
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" style="padding-left: 19px">
-                        <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="#FF3636" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                    <button type="submit" class="button-logout">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="#FF3636" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
                             <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
                         </svg>
