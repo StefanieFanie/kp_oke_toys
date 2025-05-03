@@ -6,7 +6,9 @@ use App\Livewire\Produk\Produk;
 use App\Livewire\Produk\TambahProduk;
 use App\Livewire\Produk\EditProduk;
 use App\Livewire\Kasir;
+use App\Livewire\Kategori\Kategori;
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -36,6 +38,9 @@ Route::get('produk/edit-produk', EditProduk::class)
     Route::get('kasir', Kasir::class)
     ->middleware(['auth'])
     ->name('kasir');
+    Route::get('kategori', Kategori::class)
+    ->middleware(['auth'])
+    ->name('kategori');
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
