@@ -6,6 +6,7 @@ use App\Livewire\Produk\Produk;
 use App\Livewire\Produk\TambahProduk;
 use App\Livewire\Produk\EditProduk;
 use App\Livewire\Kasir;
+use App\Livewire\Laporan\LaporanBarang;
 use App\Livewire\Kategori\Kategori;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,6 +35,10 @@ Route::get('produk/tambah-produk', TambahProduk::class)
 Route::get('produk/edit-produk', EditProduk::class)
     ->middleware(['auth'])
     ->name('produk/edit-produk');
+
+Route::get('laporan-barang', LaporanBarang::class)
+    ->middleware(['auth'])
+    ->name('laporan-barang');
 
     Route::get('kasir', Kasir::class)
     ->middleware(['auth'])
