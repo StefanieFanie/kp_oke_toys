@@ -1,59 +1,7 @@
 <?php
 
-use App\Http\Controllers\LoginController;
-use App\Livewire\Dashboard;
-use App\Livewire\Produk\Produk;
-use App\Livewire\Produk\TambahProduk;
-use App\Livewire\Produk\EditProduk;
-use App\Livewire\Kasir;
-use App\Livewire\Laporan\LaporanBarang;
-use App\Livewire\Kategori\Kategori;
-use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
 
 Route::get('/', function () {
-    return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
-})->name('home');
-
-Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
-Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->name('login.submit');
-
-Route::get('dashboard', Dashboard::class)
-    ->middleware(['auth'])
-    ->name('dashboard');
-
-Route::get('produk', Produk::class)
-    ->middleware(['auth'])
-    ->name('produk');
-
-Route::get('produk/tambah-produk', TambahProduk::class)
-    ->middleware(['auth'])
-    ->name('produk/tambah-produk');
-
-Route::get('produk/edit-produk', EditProduk::class)
-    ->middleware(['auth'])
-    ->name('produk/edit-produk');
-
-Route::get('laporan-barang', LaporanBarang::class)
-    ->middleware(['auth'])
-    ->name('laporan-barang');
-
-    Route::get('kasir', Kasir::class)
-    ->middleware(['auth'])
-    ->name('kasir');
-    Route::get('kategori', Kategori::class)
-    ->middleware(['auth'])
-    ->name('kategori');
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
-
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
-    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+    return view('welcome');
 });
-
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-
