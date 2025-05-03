@@ -3,6 +3,8 @@
 use App\Http\Controllers\LoginController;
 use App\Livewire\Dashboard;
 use App\Livewire\Produk\Produk;
+use App\Livewire\Produk\TambahProduk;
+use App\Livewire\Produk\EditProduk;
 use App\Livewire\Kasir;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +24,15 @@ Route::get('dashboard', Dashboard::class)
 Route::get('produk', Produk::class)
     ->middleware(['auth'])
     ->name('produk');
+
+Route::get('produk/tambah-produk', TambahProduk::class)
+    ->middleware(['auth'])
+    ->name('produk/tambah-produk');
+
+Route::get('produk/edit-produk', EditProduk::class)
+    ->middleware(['auth'])
+    ->name('produk/edit-produk');
+
     Route::get('kasir', Kasir::class)
     ->middleware(['auth'])
     ->name('kasir');
