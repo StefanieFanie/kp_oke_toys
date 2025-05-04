@@ -15,6 +15,14 @@ Route::get('/produk', function () {
     return view('produk.produk');
 })->name('produk');
 
+Route::get('/tambah-produk', function () {
+    return view('produk.tambah-produk');
+})->name('tambah-produk');
+
+Route::get('/edit-produk', function () {
+    return view('produk.edit-produk');
+})->name('edit-produk');
+
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'loginPost'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
