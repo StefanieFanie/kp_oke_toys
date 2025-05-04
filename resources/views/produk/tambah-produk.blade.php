@@ -20,31 +20,39 @@
 @section('content')
 <div>
     <h3 class="mb-4"><b>Oke Toys - Tambah Produk</b></h3>
-    <form>
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+    <form action="{{ route('simpan-produk') }}" method="POST">
+        @csrf
         <div class="mb-3">
-            <label for="namaProduk" class="form-label">Nama Produk</label>
-            <input type="text" class="form-control" id="namaProduk" autocomplete="off" required>
+            <label for="nama_produk" class="form-label">Nama Produk</label>
+            <input type="text" class="form-control" id="nama_produk" name="nama_produk" autocomplete="off" required>
         </div>
         <div class="mb-3">
-            <label for="kategori" class="form-label">Kategori</label>
-            <select class="form-select" id="pilih-kategori" required>
+            <label for="id_kategori" class="form-label">Kategori</label>
+            <select class="form-select" id="id_kategori" name="id_kategori" required>
                 <option selected disabled value="">Pilih kategori</option>
-                <option>Mainan Edukasi</option>
-                <option>Kategori 2</option>
-                <option>Kategori 3</option>
+                @forelse ($kategori as $item)
+                    <option value={{ $item->id }}>{{ $item->nama_kategori }}</option>
+                @empty
+                    <option selected disabled value="">Belum ada data kategori, tambahkan data kategori terlebih dahulu</option>
+                @endforelse
             </select>
         </div>
         <div class="mb-3">
-            <label for="fotoProduk" class="form-label">Foto Produk</label>
-            <input type="file" class="form-control" id="fotoProduk" accept="image/*">
+            <label for="foto_produk" class="form-label">Foto Produk</label>
+            <input type="file" class="form-control" id="foto_produk" name="foto_produk" accept="image/*">
         </div>
         <div class="mb-3">
-            <label for="hargaModal" class="form-label">Harga Modal</label>
-            <input type="number" class="form-control" id="hargaModal" required>
+            <label for="harga_modal" class="form-label">Harga Modal</label>
+            <input type="number" class="form-control" id="harga_modal" name="harga_modal" required>
         </div>
         <div class="mb-3">
-            <label for="hargaJual" class="form-label">Harga Jual</label>
-            <input type="number" class="form-control" id="hargaJual" required>
+            <label for="harga_jual" class="form-label">Harga Jual</label>
+            <input type="number" class="form-control" id="harga_jual" name="harga_jual" required>
         </div>
         <button type="submit" class="btn btn-simpan">Simpan</button>
     </form>
