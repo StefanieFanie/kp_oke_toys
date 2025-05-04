@@ -47,7 +47,7 @@
         background-color: #3B4B7A !important;
         color: white !important;
         font-weight: 600;
-        padding: 10px 15px 10px 15px;
+        padding: 10px 15px 10px 15px !important;
         margin-left: 10px;
     }
 
@@ -81,7 +81,7 @@
         </ul>
     </div>
     <a href="#" class="btn btn-download">Download</a>
-</form><br>
+</form>
 <div class="table-responsive">
     <table class="table table-bordered border-secondary table-sm">
         <thead>
