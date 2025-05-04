@@ -35,4 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kategori/edit/{id}', [KategoriController::class, 'edit'])->name('edit-kategori');
     Route::post('/kategori/update/{id}', [KategoriController::class, 'update'])->name('update-kategori');
     Route::post('/simpan-kategori', [KategoriController::class, 'simpan'])->name('simpan-kategori');
+    Route::get('/kasir', function () {
+        return view('kasir');
+    })->name('kasir');
 });
