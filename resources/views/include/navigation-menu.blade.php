@@ -24,15 +24,15 @@
             </ul>
         </div>
         <div class="dropend">
-            <a data-bs-toggle="dropdown" aria-expanded="false">
-                <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="white" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+            <a class="{{ request()->routeIs('laporan-*') ? 'active' : '' }}" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
                     <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
                     <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
                 </svg>
             </a>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#">Laporan Penjualan</a></li>
-                <li><a class="dropdown-item" href="#">Laporan Barang</a></li>
+                <li><a class="dropdown-item" href="{{ route('laporan-barang') }}">Laporan Barang</a></li>
             </ul>
         </div>
         <a class="{{ request()->routeIs('*produk') ? 'active' : '' }}" href="{{ route('produk') }}">
@@ -40,8 +40,8 @@
                 <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
             </svg>
         </a>
-        <a href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="white" class="bi bi-grid-fill" viewBox="0 0 16 16">
+        <a class="{{ request()->routeIs('kategori') ? 'active' : '' }}" href="{{ route('kategori') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-grid-fill" viewBox="0 0 16 16">
                 <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5z"/>
             </svg>
         </a>
@@ -91,19 +91,19 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('laporan-*') ? 'active-small' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Laporan
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="nav-link" href="#">Laporan Penjualan</a></li>
-                            <li><a class="nav-link" href="#">Laporan Barang</a></li>
+                            <li><a class="nav-link {{ request()->routeIs('laporan-barang') ? 'active-small' : '' }}" href="{{ route('laporan-barang') }}">Laporan Barang</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('produk') ? 'active-small' : '' }}" href="{{ route('produk') }}">Produk</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Kategori</a>
+                        <a class="nav-link {{ request()->routeIs('kategori') ? 'active-small' : '' }}" href="{{ route('kategori') }}">Kategori</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

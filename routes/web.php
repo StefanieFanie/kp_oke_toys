@@ -30,4 +30,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/kategori', [App\Http\Controllers\KategoriController::class, 'show'])->name('kategori');
+    Route::get('/laporan-barang', function () {
+        return view('laporan.laporan-barang');
+    })->name('laporan-barang');
 });
