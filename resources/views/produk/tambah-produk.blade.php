@@ -25,7 +25,7 @@
             {{ session('error') }}
         </div>
     @endif
-    <form action="{{ route('simpan-produk') }}" method="POST">
+    <form action="{{ route('simpan-produk') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <label for="nama_produk" class="form-label">Nama Produk</label>

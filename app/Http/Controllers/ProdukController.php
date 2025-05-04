@@ -26,7 +26,7 @@ class ProdukController extends Controller
             return redirect()->back()->with('error', 'Nama produk sudah ada');
         }
         $data['nama_produk'] = ucwords(strtolower($request->nama_produk));
-        $data['foto_produk'] = $request->hasFile('foto_produk') ? request->file('foto_produk')->store('foto','public') : 'foto-produk/image-fill.svg';
+        $data['foto_produk'] = $request->hasFile('foto_produk') ? $request->file('foto_produk')->store('foto','public') : 'foto-produk/image-fill.svg';
         $data['id_kategori'] = $request->id_kategori;
         $data['harga_modal'] = $request->harga_modal;
         $data['harga_jual'] = $request->harga_jual;
