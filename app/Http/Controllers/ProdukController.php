@@ -11,7 +11,8 @@ class ProdukController extends Controller
     function show() {
         $data = Produk::where('is_deleted', false)
                       ->orderBy('id', 'desc')->get();
-        return view('produk.produk', ['produk' => $data]);
+        $kategori = Kategori::all();
+        return view('produk.produk', ['produk' => $data, 'kategori' => $kategori]);
     }
 
     public function tambah() {
@@ -65,5 +66,30 @@ class ProdukController extends Controller
         }
         Produk::find($id)->update($data);
         return redirect(route('produk'))->with('success', 'Data produk berhasil diperbarui.');
+    }
+
+    public function hapus($id) {
+        $data_produk = Produk::find($id);
+        if ($data_produk) {
+            $data_produk->is_deleted = true;
+            $data_produk->save();
+        }
+        return redirect(route('produk'))->with('success', 'Data produk berhasil dihapus.');
+    }
+
+    public function cari(Request $request) {
+        $produks = Produk::with('kategori');
+        if ($request->filled('cari')) {
+            $produks->where('nama_produk', 'like', '%' . $request->cari . '%');
+        }
+        if ($request->filled('kategori') && $request->kategori !== 'semua') {
+            $produks->where('id_kategori', $request->kategori);
+        }
+        return view('produk.produk', [
+            'produk' => $produks->where('is_deleted', false)->orderBy('id', 'desc')->get(),
+            'kategori' => Kategori::orderBy('id')->get(),
+            'selected_kategori' => $request->kategori,
+            'cari' => $request->cari
+        ]);
     }
 }
