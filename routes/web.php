@@ -43,5 +43,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/simpan-user', [UserController::class, 'simpan'])->name('simpan-user');
     Route::get('/edit-user/{id}', [UserController::class, 'edit'])->name('edit-user');
     Route::post('/update-user/{id}', [UserController::class, 'update'])->name('update-user');
-    Route::get('/hapus-user/{id}', [UserController::class, 'hapus'])->name('hapus-user');
+    Route::delete('/hapus-user/{id}', [UserController::class, 'hapus'])->name('hapus-user');
 });

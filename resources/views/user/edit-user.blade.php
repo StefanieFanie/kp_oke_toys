@@ -19,7 +19,7 @@
 </style>
 @section('content')
 <div>
-    <h3 class="mb-4"><b>Oke Toys - Tambah User</b></h3>
+    <h3 class="mb-4"><b>Oke Toys - Edit User</b></h3>
     @if (session('error'))
         <div class="alert alert-danger">
             {{ session('error') }}

@@ -34,10 +34,13 @@
     }
     
     .profile-image {
+        display: block;
         width: 50px;
         height: 50px;
         border-radius: 50%;
         object-fit: cover;
+        margin-left: auto;
+        margin-right: auto;
     }
     
     .modal-content {
@@ -64,7 +67,7 @@
         border-radius: 10px !important;
         padding: 0.5rem 0 !important;
         font-weight: 600 !important;
-        width: 48% !important;
+        width: 100% !important;
         border: none !important;
         box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25); 
     }
@@ -155,7 +158,11 @@
                                         <div class="modal-body">
                                             Apakah Anda yakin ingin menghapus User ini?
                                             <div class="modal-action-container mt-4">
-                                                <a href="{{ route('hapus-user', $u->id) }}" class="btn btn-ya">Ya</a>
+                                                <form action="{{ route('hapus-user', $u->id) }}" method="POST" style="width: 48%;margin: 0;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-ya">Ya</button>
+                                                </form>
                                                 <button type="button" class="btn btn-tidak" data-bs-dismiss="modal">Tidak</button>
                                             </div>
                                         </div>

@@ -50,6 +50,7 @@ class UserController extends Controller
         if ($request->has('role') && !empty($request->role)) {
             $query->where('role', $request->role);
         }
+        $query->where('is_deleted', false);
 
         $data = $query->get();
         return view('user.user', ['user' => $data]);
@@ -66,6 +67,12 @@ class UserController extends Controller
     function update(Request $request, $id)
     {
         $user = User::find($id);
+        if ($user->role === 'owner' && $request->role === 'kasir') {
+            $ownerCount = User::where('role', 'owner')->where('is_deleted', false)->count();
+            if ($ownerCount <= 1) {
+                return redirect()->back()->with('error', 'Tidak dapat mengubah peran. Setidaknya harus ada satu user dengan peran owner.')->withInput();
+            }
+        }
 
         $request->validate([
             'name' => 'required',
@@ -105,11 +112,10 @@ class UserController extends Controller
     public function hapus($id){
         $data = User::find($id);
         
-        if ($data->photo && file_exists(public_path('storage/profil/'.$data->photo))) {
-            unlink(public_path('storage/profil/'.$data->photo));
+        if ($data) {
+            $data->is_deleted = true;
+            $data->save();
         }
-        
-        $data->delete();
         return redirect(route('user'))->with('success', 'User berhasil dihapus');
     }
 }
