@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -37,4 +38,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/kasir', function () {
         return view('kasir');
     })->name('kasir');
+    Route::get('/user', [UserController::class, 'show'])->name('user');
+    Route::get('/tambah-user', [UserController::class, 'tambah'])->name('tambah-user');
+    Route::post('/simpan-user', [UserController::class, 'simpan'])->name('simpan-user');
+    Route::get('/edit-user/{id}', [UserController::class, 'edit'])->name('edit-user');
+    Route::post('/update-user/{id}', [UserController::class, 'update'])->name('update-user');
+    Route::delete('/hapus-user/{id}', [UserController::class, 'hapus'])->name('hapus-user');
 });
