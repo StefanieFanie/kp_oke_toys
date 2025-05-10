@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
@@ -38,6 +39,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/kasir', function () {
         return view('kasir');
     })->name('kasir');
+    Route::get('/supplier', [SupplierController::class, 'show'])->name('supplier');
+    Route::get('/tambah-supplier', [SupplierController::class, 'tambah'])->name('tambah-supplier');
+    Route::post('/simpan-supplier', [SupplierController::class, 'simpan'])->name('simpan-supplier');
+    Route::get('/edit-supplier/{id}', [SupplierController::class, 'edit'])->name('edit-supplier');
+    Route::post('/update-supplier/{id}', [SupplierController::class, 'update'])->name('update-supplier');
+    Route::delete('/hapus-supplier/{id}', [SupplierController::class, 'hapus'])->name('hapus-supplier');
     Route::get('/user', [UserController::class, 'show'])->name('user');
     Route::get('/tambah-user', [UserController::class, 'tambah'])->name('tambah-user');
     Route::post('/simpan-user', [UserController::class, 'simpan'])->name('simpan-user');
