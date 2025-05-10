@@ -47,25 +47,25 @@ class SupplierController extends Controller
 
     public function update(Request $request, $id) {
         $nama_supplier = ucwords(strtolower($request->nama_supplier));
+        $supplier = Supplier::withTrashed()->where('nama_supplier', $nama_supplier)->first();
+        if ($supplier) {
+            if ($supplier->trashed()) {
+                return redirect()->back()->with(
+                    'error', 'Nama supplier ini pernah dihapus. Untuk memulihkannya bisa tambah supplier dengan nama yang sama'
+                );
+            }
+        }
         $existingSupplier = Supplier::withTrashed()->where('nama_supplier', $nama_supplier)->where('id', '!=', $id)->first();
         if ($existingSupplier) {
-            if ($existingSupplier->trashed()) {
-                $existingSupplier->restore();
-                $existingSupplier->update([
-                    'nomor_telepon' => $nomor_telepon,
-                    'email' => $email,
-                    'alamat' => $alamat
-                ]);
-            } else {
-                return redirect()->back()->with('error', 'Nama supplier sudah ada');
-            }
-        } else {
-            $data['nama_supplier'] = ucwords(strtolower($request->nama_supplier));
-            $data['nomor_telepon'] = $request->nomor_telepon;
-            $data['email'] = $request->email;
-            $data['alamat'] = $request->alamat;
-            Supplier::find($id)->update($data);
+            return redirect()->back()->with('error', 'Nama supplier sudah ada');
         }
+        $supplier->update([
+            $data['nama_supplier'] = ucwords(strtolower($request->nama_supplier)),
+            $data['nomor_telepon'] = $request->nomor_telepon,
+            $data['email'] = $request->email,
+            $data['alamat'] = $request->alamat,
+            Supplier::find($id)->update($data),
+        ]);
         return redirect(route('supplier'))->with('success', 'Data supplier berhasil diperbarui.');
     }
 
