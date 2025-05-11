@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Kategori;
+use App\Models\kategori;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
