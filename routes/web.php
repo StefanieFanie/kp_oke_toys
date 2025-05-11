@@ -21,6 +21,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/kategori', [KategoriController::class, 'show'])->name('kategori');
+    Route::get('/stok-masuk', function () {
+        return view('stok-masuk.stok-masuk');
+    })->name('stok-masuk');
+    Route::get('/form-input-stok-masuk', function () {
+        return view('stok-masuk.form-input-stok-masuk');
+    })->name('form-input-stok-masuk');
     Route::get('/laporan-barang', function () {
         return view('laporan.laporan-barang');
     })->name('laporan-barang');
