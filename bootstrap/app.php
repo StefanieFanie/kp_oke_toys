@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\AuthenticateMiddleware;
+use App\Http\middleware\AuthenticateMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
