@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class KategoriController extends Controller
 {
     function show(){
-        $data=Kategori::all();
+        $data = Kategori::whereNull('deleted_at')->get();
 
         return view('kategori.kategori',['kategori'=>$data]);
     }
@@ -46,5 +46,22 @@ class KategoriController extends Controller
             Kategori::find($id)->update($data);
 
             return redirect(route('kategori'));
+        }
+        
+        public function hapus($id){
+            $kategori = Kategori::find($id);
+            
+            if (!$kategori) {
+                return redirect()->route('kategori')->with('error', 'Kategori tidak ditemukan.');
+            }
+            
+            $jumlah_produk = $kategori->produk()->where('is_deleted', false)->count();
+            
+            if ($jumlah_produk > 0) {
+                return redirect()->route('kategori')->with('error', 'Tidak dapat menghapus kategori karena masih terdapat ' . $jumlah_produk . ' produk yang menggunakan kategori ini. Hapus atau ubah kategori produk terlebih dahulu.');
+            }
+            
+            $kategori->delete();
+            return redirect()->route('kategori')->with('success', 'Kategori berhasil dihapus.');
         }
 }
