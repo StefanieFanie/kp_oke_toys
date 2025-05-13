@@ -12,14 +12,14 @@
             </svg>
         </a>
         <div class="dropend">
-            <a data-bs-toggle="dropdown" aria-expanded="false" class="{{ request()->routeIs('kasir') ? 'active' : '' }}">
+            <a data-bs-toggle="dropdown" aria-expanded="false" class="{{ request()->routeIs('kasir', 'stok-masuk') ? 'active' : '' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
                     <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
                 </svg>
             </a>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{{ route('kasir') }}">Kasir</a></li>
-                <li><a class="dropdown-item" href="#">Stok Masuk</a></li>
+                <li><a class="dropdown-item" href="{{ route('stok-masuk') }}">Stok Masuk</a></li>
                 <li><a class="dropdown-item" href="#">Diskon Reseller</a></li>
             </ul>
         </div>
@@ -40,20 +40,20 @@
                 <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
             </svg>
         </a>
-        <a class="{{ request()->routeIs('kategori') ? 'active' : '' }}" href="{{ route('kategori') }}">
+        <a class="{{ request()->routeIs('*kategori') ? 'active' : '' }}" href="{{ route('kategori') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-grid-fill" viewBox="0 0 16 16">
                 <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5z"/>
             </svg>
         </a>
         <div class="dropend">
-            <a data-bs-toggle="dropdown" aria-expanded="false">
-                <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="white" class="bi bi-person" viewBox="0 0 16 16">
+            <a class="{{ request()->routeIs('*supplier', '*user') ? 'active' : '' }}" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
                     <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
                 </svg>
             </a>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Data Supplier</a></li>
-                <li><a class="dropdown-item" href="#">Data User</a></li>
+                <li><a class="dropdown-item" href="{{ route('supplier') }}">Data Supplier</a></li>
+                <li><a class="dropdown-item" href="{{ route('user') }}">Data User</a></li>
             </ul>
         </div>
         <form method="POST" action="{{ route('logout') }}">
@@ -81,12 +81,12 @@
                         <a class="nav-link {{ request()->routeIs('dashboard') ? 'active-small' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('dashboard') ? 'active-small' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('kasir', 'stok-masuk') ? 'active-small' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Transaksi
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="nav-link" href="{{ route('kasir') }}">Kasir</a></li>
-                            <li><a class="nav-link" href="#">Stok Masuk</a></li>
+                            <li><a class="nav-link" href="{{ route('stok-masuk') }}">Stok Masuk</a></li>
                             <li><a class="nav-link" href="#">Diskon Reseller</a></li>
                         </ul>
                     </li>
@@ -100,18 +100,18 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('produk') ? 'active-small' : '' }}" href="{{ route('produk') }}">Produk</a>
+                        <a class="nav-link {{ request()->routeIs('*produk') ? 'active-small' : '' }}" href="{{ route('produk') }}">Produk</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('kategori') ? 'active-small' : '' }}" href="{{ route('kategori') }}">Kategori</a>
+                        <a class="nav-link {{ request()->routeIs('*kategori') ? 'active-small' : '' }}" href="{{ route('kategori') }}">Kategori</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('*supplier', '*user') ? 'active-small' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Data Lainnya
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="nav-link" href="#">Data Supplier</a></li>
-                            <li><a class="nav-link" href="#">Data User</a></li>
+                            <li><a class="nav-link" href="{{ route('supplier') }}">Data Supplier</a></li>
+                            <li><a class="nav-link" href="{{ route('user') }}">Data User</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
