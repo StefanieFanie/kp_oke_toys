@@ -5,6 +5,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app/diskon_reseller.json
 /vendor
 .env
 .env.backup
