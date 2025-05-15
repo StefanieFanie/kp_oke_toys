@@ -7,6 +7,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DiskonResellerController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -27,6 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/form-input-stok-masuk', function () {
         return view('stok-masuk.form-input-stok-masuk');
     })->name('form-input-stok-masuk');
+    Route::get('/edit-diskon-reseller', [DiskonResellerController::class, 'edit'])->name('edit-diskon-reseller');
+    Route::post('/update-diskon-reseller', [DiskonResellerController::class, 'update'])->name('update-diskon-reseller');
     Route::get('/laporan-barang', function () {
         return view('laporan.laporan-barang');
     })->name('laporan-barang');
