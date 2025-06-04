@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StokMasukController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\SupplierController;
@@ -30,6 +31,13 @@ Route::middleware('auth')->group(function () {
     })->name('form-input-stok-masuk');
     Route::get('/edit-diskon-reseller', [DiskonResellerController::class, 'edit'])->name('edit-diskon-reseller');
     Route::post('/update-diskon-reseller', [DiskonResellerController::class, 'update'])->name('update-diskon-reseller');
+    Route::get('/stok-masuk', [StokMasukController::class, 'show'])->name('stok-masuk');
+    Route::get('/form-input-stok-masuk', [StokMasukController::class, 'input'])->name('form-input-stok-masuk');
+    Route::post('/temp-tambah-stok-masuk', [StokMasukController::class, 'tempTambahStokMasuk'])->name('temp-tambah-stok-masuk');
+    Route::post('/temp-tambah-stok-masuk-produk', [StokMasukController::class, 'tempTambah'])->name('temp-tambah-stok-masuk-produk');
+    Route::post('/temp-update-stok-masuk-produk', [StokMasukController::class, 'tempUpdate'])->name('temp-update-stok-masuk-produk');
+    Route::post('/temp-hapus-stok-masuk-produk', [StokMasukController::class, 'tempHapus'])->name('temp-hapus-stok-masuk-produk');
+    Route::post('/simpan-stok-masuk', [StokMasukController::class, 'simpan'])->name('simpan-stok-masuk');
     Route::get('/laporan-barang', function () {
         return view('laporan.laporan-barang');
     })->name('laporan-barang');
