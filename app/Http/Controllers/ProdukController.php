@@ -9,8 +9,7 @@ use App\Models\kategori;
 class ProdukController extends Controller
 {
     function show() {
-        $data = Produk::where('is_deleted', false)
-                      ->orderBy('id', 'desc')->get();
+        $data = Produk::orderBy('id', 'desc')->get();
         $kategori = Kategori::all();
         return view('produk.produk', ['produk' => $data, 'kategori' => $kategori]);
     }
@@ -22,22 +21,39 @@ class ProdukController extends Controller
 
     function simpan(Request $request) {
         $nama_produk = ucwords(strtolower($request->nama_produk));
-        $existingProduct = Produk::where('nama_produk', $nama_produk)->first();
+        $existingProduct = Produk::withTrashed()->where('nama_produk', $nama_produk)->first();
         if ($existingProduct) {
-            return redirect()->back()->with('error', 'Nama produk sudah ada');
+            if ($existingProduct->trashed()) {
+                if ($request->harga_jual < $request->harga_modal) {
+                    return redirect()->back()->with('error', 'Harga jual tidak boleh lebih rendah daripada harga modal');
+                }
+                if ($request->harga_modal == 0 || $request->harga_jual == 0) {
+                    return redirect()->back()->with('error', 'Harga tidak boleh 0');
+                }
+                $existingProduct->restore();
+                $existingProduct->update([
+                    'foto_produk' => $request->hasFile('foto_produk') ? $request->file('foto_produk')->store('foto','public') : 'foto-produk/image-fill.svg',
+                    'id_kategori' => $request->id_kategori,
+                    'harga_modal' => $request->harga_modal,
+                    'harga_jual' => $request->harga_jual
+                ]);
+            } else {
+                return redirect()->back()->with('error', 'Nama produk sudah ada');
+            }
+        } else {
+            $data['nama_produk'] = ucwords(strtolower($request->nama_produk));
+            $data['foto_produk'] = $request->hasFile('foto_produk') ? $request->file('foto_produk')->store('foto','public') : 'foto-produk/image-fill.svg';
+            $data['id_kategori'] = $request->id_kategori;
+            $data['harga_modal'] = $request->harga_modal;
+            $data['harga_jual'] = $request->harga_jual;
+            if ($data['harga_jual'] < $data['harga_modal']) {
+                return redirect()->back()->with('error', 'Harga jual tidak boleh lebih rendah daripada harga modal');
+            }
+            if ($data['harga_modal'] == 0 || $data['harga_jual'] == 0) {
+                return redirect()->back()->with('error', 'Harga tidak boleh 0');
+            }
+            $produk = Produk::create($data);
         }
-        $data['nama_produk'] = ucwords(strtolower($request->nama_produk));
-        $data['foto_produk'] = $request->hasFile('foto_produk') ? $request->file('foto_produk')->store('foto','public') : 'foto-produk/image-fill.svg';
-        $data['id_kategori'] = $request->id_kategori;
-        $data['harga_modal'] = $request->harga_modal;
-        $data['harga_jual'] = $request->harga_jual;
-        if ($data['harga_jual'] < $data['harga_modal']) {
-            return redirect()->back()->with('error', 'Harga jual tidak boleh lebih rendah daripada harga modal');
-        }
-        if ($data['harga_modal'] == 0 || $data['harga_jual'] == 0) {
-            return redirect()->back()->with('error', 'Harga tidak boleh 0');
-        }
-        $produk = Produk::create($data);
         return redirect(route('produk'))->with('success', 'Data produk berhasil ditambahkan.');
     }
 
@@ -49,6 +65,14 @@ class ProdukController extends Controller
 
     public function update(Request $request, $id) {
         $nama_produk = ucwords(strtolower($request->nama_produk));
+        $produk = Produk::withTrashed()->where('nama_produk', $nama_produk)->first();
+        if ($produk) {
+            if ($produk->trashed()) {
+                return redirect()->back()->with(
+                    'error', 'Nama produk ini pernah dihapus. Untuk memulihkannya bisa tambah produk dengan nama yang sama'
+                );
+            }
+        }
         $existingProduct = Produk::where('nama_produk', $nama_produk)->where('id', '!=', $id)->first();
         if ($existingProduct) {
             return redirect()->back()->with('error', 'Nama produk sudah ada');
@@ -70,10 +94,7 @@ class ProdukController extends Controller
 
     public function hapus($id) {
         $data_produk = Produk::find($id);
-        if ($data_produk) {
-            $data_produk->is_deleted = true;
-            $data_produk->save();
-        }
+        $data_produk->delete();
         return redirect(route('produk'))->with('success', 'Data produk berhasil dihapus.');
     }
 
@@ -86,7 +107,7 @@ class ProdukController extends Controller
             $produks->where('id_kategori', $request->kategori);
         }
         return view('produk.produk', [
-            'produk' => $produks->where('is_deleted', false)->orderBy('id', 'desc')->get(),
+            'produk' => $produks->orderBy('id', 'desc')->get(),
             'kategori' => Kategori::orderBy('id')->get(),
             'selected_kategori' => $request->kategori,
             'cari' => $request->cari
