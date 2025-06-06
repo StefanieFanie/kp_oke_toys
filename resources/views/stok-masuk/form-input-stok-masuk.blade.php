@@ -176,7 +176,7 @@
                 <label for="tanggal-jatuh-tempo" class="form-label">Tanggal Jatuh Tempo</label>
                 <input type="date" class="form-control" id="tanggal_jatuh_tempo" name="tanggal_jatuh_tempo" autocomplete="off" required>
             </div>
-            <button type="submit" class="btn btn1" style="float:right">Selesai</button>
+            <button type="submit" onclick="simpanStokMasuk()" class="btn btn1" style="float:right">Selesai</button>
         </form>
     </div>
     <script>
@@ -239,6 +239,10 @@
             simpan_button.style.display = 'none';
             edit_button.style.display = 'inline-block';
             document.getElementById(`hidden-jumlah-${id_produk}`).value = input.value;
+        }
+
+        function simpanStokMasuk() {
+            sessionStorage.setItem('donePage1', 'false');
         }
     </script>
 @endsection

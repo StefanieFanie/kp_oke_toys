@@ -21,18 +21,12 @@ class StokMasukController extends Controller
         $data_produk = Produk::all();
         $temp_stok_masuk = session('stok_masuk_temp', []);
         $temp_stok_masuk_produk = session('stok_masuk_produk_temp', []);
+        $total = session('total', []);
         return view('stok-masuk.form-input-stok-masuk', ['supplier' => $data_supplier, 'produk' => $data_produk, 'temp_stok_masuk' => $temp_stok_masuk, 'temp_stok_masuk_produk' => $temp_stok_masuk_produk]);
     }
 
     public function tempTambahStokMasuk(Request $request) {
         $supplier = Supplier::find($request->id_supplier);
-        // $temp_stok_masuk = session('stok_masuk_temp', []);
-        // $temp_stok_masuk[] = [
-        //     'tanggal' => $request->tanggal,
-        //     'id_supplier' => $request->id_supplier,
-        //     'nama_supplier' => $request->$supplier ? $supplier->nama_supplier : null
-        // ];
-        // session(['stok_masuk_temp' => $temp_stok_masuk]);
         session([
             'stok_masuk_temp' => [
                 'tanggal' => $request->tanggal,
@@ -104,8 +98,14 @@ class StokMasukController extends Controller
                 'jumlah' => $item['jumlah'],
                 'sub_total' => $item['sub_total'],
             ]);
+            $stok = Produk::where('id', $item['id_produk'])->value('stok');
+            Produk::find($item['id_produk'])->update([
+                'stok' => $stok + $item['jumlah']
+            ]);
         }
+        session()->forget('stok_masuk_temp');
         session()->forget('stok_masuk_produk_temp');
+        session()->forget('total');
         return redirect()->route('stok-masuk');
     }
 }
