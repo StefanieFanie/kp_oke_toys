@@ -68,6 +68,10 @@
         background-color: #D5E0FF !important;
     }
 
+    .form-control-sm {
+        border: none;
+    }
+
     @media (max-width: 768px) {
         .grid-kiri {
             margin-bottom: 60px;
@@ -151,7 +155,7 @@
                                         <td class="align-middle text-center">{{ $item->stok }}</td>
                                         <td class="align-middle text-center">Rp {{ $item->harga_jual }}</td>
                                         <td class="align-middle text-center" style="width: 100px;">
-                                            <input type="number" class="form-control form-control-sm text-center" value="0" min="0" max="20" style="width: 60px; margin: 0 auto;">
+                                            <input type="number" class="form-control-sm text-center" value="0" min="0" style="width: 60px; margin: 0 auto;">
                                         </td>
                                         <td class="align-middle text-center">
                                             <button class="btn btn-md" style="background-color: #A1C6FF; border:1px solid #8EABFF;box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
