@@ -9,6 +9,7 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DiskonResellerController;
+use App\Http\Controllers\PenjualanController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -54,9 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/kategori/update/{id}', [KategoriController::class, 'update'])->name('update-kategori');
     Route::post('/simpan-kategori', [KategoriController::class, 'simpan'])->name('simpan-kategori');
     Route::delete('/kategori/hapus/{id}', [KategoriController::class, 'hapus'])->name('hapus-kategori');
-    Route::get('/kasir', function () {
-        return view('kasir');
-    })->name('kasir');
+    Route::get('/kasir', [PenjualanController::class, 'show'])->name('kasir');
+    Route::get('/kasir', [PenjualanController::class, 'cari'])->name('kasir');
     Route::get('/supplier', [SupplierController::class, 'show'])->name('supplier');
     Route::get('/tambah-supplier', [SupplierController::class, 'tambah'])->name('tambah-supplier');
     Route::post('/simpan-supplier', [SupplierController::class, 'simpan'])->name('simpan-supplier');
