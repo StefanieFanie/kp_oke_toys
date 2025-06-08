@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan-barang', function () {
         return view('laporan.laporan-barang');
     })->name('laporan-barang');
+    Route::post('/kasir/simpan/{id_produk}', [PenjualanController::class, 'simpan'])->name('simpan-penjualan');
     Route::get('/produk', [ProdukController::class, 'show'])->name('produk');
     Route::get('/tambah-produk', [ProdukController::class, 'tambah'])->name('tambah-produk');
     Route::post('/simpan-produk', [ProdukController::class, 'simpan'])->name('simpan-produk');
@@ -69,4 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/edit-user/{id}', [UserController::class, 'edit'])->name('edit-user');
     Route::post('/update-user/{id}', [UserController::class, 'update'])->name('update-user');
     Route::delete('/hapus-user/{id}', [UserController::class, 'hapus'])->name('hapus-user');
+    Route::post('/kasir/tambah-jumlah/{id_produk}', [PenjualanController::class, 'tambahJumlah'])->name('tambah-jumlah');
+    Route::post('/kasir/kurang-jumlah/{id_produk}', [PenjualanController::class, 'kurangJumlah'])->name('kurang-jumlah');
+    Route::post('/kasir/hapus-semua-produk', [PenjualanController::class, 'hapusSemuaProduk'])->name('hapus-semua-produk');
 });
