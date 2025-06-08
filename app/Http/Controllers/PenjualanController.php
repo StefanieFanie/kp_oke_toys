@@ -29,4 +29,128 @@ class PenjualanController extends Controller
             'cari' => $request->cari
         ]);
     }
+
+    public function simpan(Request $request, $id_produk) {    
+        $jumlahProduk = (int) $request->jumlah_produk;
+        
+        if ($jumlahProduk == 0) {
+            session()->flash('update_status', 'error');
+            session()->flash('update_message', 'Jumlah produk tidak boleh 0');
+            return redirect(route('kasir'));
+        }
+        $produk = session('produk', []);
+
+        $userInputQuantity = $jumlahProduk;
+        $product = Produk::find($id_produk);
+        $hargaModal = $product->harga_modal;
+        $hargaJual = $product->harga_jual;
+
+        $stok = $product->stok;
+        
+        $existingInCart = 0;
+        foreach ($produk as $item) {
+            if ($item['id_produk'] == $id_produk) {
+                $existingInCart = $item['jumlah_produk'];
+                break;
+            }
+        }
+        
+        if (($existingInCart + $userInputQuantity) > $stok) {
+            session()->flash('update_status', 'error');
+            session()->flash('update_message', 'Stok tidak cukup (sudah ada '.$existingInCart.' di keranjang)');
+            return redirect(route('kasir'));
+        }
+
+        $index = null;
+        foreach ($produk as $key => $item) {
+            if ($item['id_produk'] == $id_produk) {
+                $index = $key;
+                break;
+            }
+        }
+        
+        if ($index !== null) {
+            $produk[$index]['jumlah_produk'] += $userInputQuantity;
+            $produk[$index]['harga_modal'] = $hargaModal;
+            $produk[$index]['harga_jual'] = $hargaJual;
+            $produk[$index]['total_harga'] = $produk[$index]['jumlah_produk'] * $hargaJual;
+        } else {
+            $newProduk = [
+                'id_produk' => $id_produk,
+                'jumlah_produk' => $userInputQuantity,
+                'harga_modal' => $hargaModal,
+                'harga_jual' => $hargaJual,
+                'total_harga' => $userInputQuantity * $hargaJual,
+            ];
+
+            $produk[] = $newProduk;
+        }
+
+        session(['produk' => $produk]);
+        return redirect(route('kasir'));
+    }
+    
+
+    public function hapusSemuaProduk()
+    {
+        session()->forget('produk');
+        session()->flash('update_status', 'success');
+        session()->flash('update_message', 'Keranjang berhasil dikosongkan');
+        return redirect(route('kasir'));
+    }
+    
+    public function tambahJumlah($id_produk)
+    {
+        $produk = session('produk', []);
+        $currentQuantity = 0;
+        
+        foreach ($produk as $item) {
+            if ($item['id_produk'] == $id_produk) {
+                $currentQuantity = $item['jumlah_produk'];
+                break;
+            }
+        }
+        
+        $product = Produk::find($id_produk);
+        $stok = $product->stok;
+        
+        if (($currentQuantity + 1) > $stok) {
+            session()->flash('update_status', 'error');
+            session()->flash('update_message', 'Stok tidak cukup');
+            return redirect(route('kasir'));
+        }
+
+        foreach ($produk as $key => $item) {
+            if ($item['id_produk'] == $id_produk) {
+                $produk[$key]['jumlah_produk'] += 1;
+                $produk[$key]['total_harga'] = $produk[$key]['jumlah_produk'] * $produk[$key]['harga_jual'];
+                break;
+            }
+        }
+        
+        session(['produk' => $produk]);
+        return redirect(route('kasir'));
+    }
+
+    
+    public function kurangJumlah($id_produk)
+    {
+        $produk = session('produk', []);
+        
+        foreach ($produk as $key => $item) {
+            if ($item['id_produk'] == $id_produk) {
+                if ($produk[$key]['jumlah_produk'] > 1) {
+                    $produk[$key]['jumlah_produk'] -= 1;
+                    $produk[$key]['total_harga'] = $produk[$key]['jumlah_produk'] * $produk[$key]['harga_jual'];
+                } else {
+                    unset($produk[$key]);
+                    $produk = array_values($produk);
+                }
+                break;
+            }
+        }
+        
+        session(['produk' => $produk]);
+        return redirect(route('kasir'));
+    }
 }

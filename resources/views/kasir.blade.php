@@ -72,12 +72,70 @@
         border: none;
     }
 
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        min-width: 250px;
+        background-color: #fff;
+        color: #333;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        border-left: 5px solid;
+        opacity: 0;
+        transform: translateX(50px);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .toast.error {
+        border-left-color: #f44336;
+    }
+
+    .toast.success {
+        border-left-color: #4CAF50;
+    }
+
+    .toast-icon {
+        margin-right: 10px;
+        font-size: 20px;
+    }
+
+    .toast-message {
+        flex-grow: 1;
+    }
+
+    .toast-close {
+        cursor: pointer;
+        font-size: 18px;
+        color: #aaa;
+    }
+
+    .toast-close:hover {
+        color: #333;
+    }
+
     @media (max-width: 768px) {
         .grid-kiri {
             margin-bottom: 60px;
         }
     }
 </style>
+
+<div class="toast-container"></div>
+
 <div class="d-flex flex-column " style="height: calc(100% - 64px);">
     <div class="row align-items-center">
         <div class="col-md-4">
@@ -147,6 +205,8 @@
                             </thead>
                             <tbody>
                                 @forelse ($produk as $item)
+                                                <form id="formcart" method="POST" action="{{ route('simpan-penjualan', [ 'id_produk' => $item->id]) }}" data-harga-jual="{{ $item->harga_jual }}" data-stok="{{ $item->stok }}">
+@csrf
                                     <tr>
                                         <td class="align-middle text-center">
                                             <img src="{{ asset('storage/' . $item->foto_produk) }}" width="50px" height="50px">
@@ -155,14 +215,15 @@
                                         <td class="align-middle text-center">{{ $item->stok }}</td>
                                         <td class="align-middle text-center">Rp {{ $item->harga_jual }}</td>
                                         <td class="align-middle text-center" style="width: 100px;">
-                                            <input type="number" class="form-control-sm text-center" value="0" min="0" style="width: 60px; margin: 0 auto;">
+                                            <input type="number" name="jumlah_produk" class="form-control-sm text-center" value="0" min="0" style="width: 60px; margin: 0 auto;">
                                         </td>
                                         <td class="align-middle text-center">
-                                            <button class="btn btn-md" style="background-color: #A1C6FF; border:1px solid #8EABFF;box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
+                                            <button class="btn btn-md" type="submit" style="background-color: #A1C6FF; border:1px solid #8EABFF;box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
                                                 <i class="bi bi-basket"></i>
                                             </button>
                                         </td>
                                     </tr>
+                                </form>
                                 @empty
 
                                 @endforelse
@@ -174,83 +235,60 @@
         </div>
 
         <div class="col-md-4 ps-md-2" style="height: calc(100vh - 168px);">
-            <div class="card" style="border-radius:15px; border: 1px solid #8EABFF; margin-top: -41px;height: calc(100vh - 66px);box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
-                <div class="card-header text-white d-flex justify-content-between align-items-center" style=" background-color: #3B4B7A; padding: 12px 15px; border-radius: 15px 15px 0 0;">
+            <div class="card d-flex flex-column" style="border-radius:16px; border: 1px solid #8EABFF; margin-top: -41px; height: calc(100vh - 66px); box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
+                <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #3B4B7A; padding: 12px 15px; border-radius: 15px 15px 0 0;">
                     <h5 class="mb-0">Daftar Pesanan</h5>
-                    <button class="btn btn-sm btn-danger" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <form action="{{ route('hapus-semua-produk') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-danger" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
                 </div>
 
-                <div class="card-body p-0" style="overflow-y: auto; height: calc(100% - 200px); background-color: #E4EBFF;">
-                    <div class="order-items">
-                        <div class="order-item py-3 px-3">
-                            <div class="row align-items-center">
-                                <div class="col-4">
-                                    <div class="fw-bold">Yoyo</div>
-                                </div>
-                                <div class="col-4 text-center">
-                                    <div>Rp 10.000</div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="d-flex align-items-center justify-content-end">
-                                        <button class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0;">
-                                            <i class="bi bi-dash"></i>
-                                        </button>
-                                        <span class="mx-2 fw-bold">2</span>
-                                        <button class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0;">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="order-item py-3 px-3">
-                            <div class="row align-items-center">
-                                <div class="col-4">
-                                    <div class="fw-bold">Congklak</div>
-                                </div>
-                                <div class="col-4 text-center">
-                                    <div>Rp 15.000</div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="d-flex align-items-center justify-content-end">
-                                        <button class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0;">
-                                            <i class="bi bi-dash"></i>
-                                        </button>
-                                        <span class="mx-2 fw-bold">1</span>
-                                        <button class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0;">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="order-item py-3 px-3">
-                            <div class="row align-items-center">
-                                <div class="col-4">
-                                    <div class="fw-bold">Monopoli</div>
-                                </div>
-                                <div class="col-4 text-center">
-                                    <div>Rp 20.000</div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="d-flex align-items-center justify-content-end">
-                                        <button class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0;">
-                                            <i class="bi bi-dash"></i>
-                                        </button>
-                                        <span class="mx-2 fw-bold">3</span>
-                                        <button class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0;">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<div class="card-body p-0 flex-grow-1 overflow-auto" style="background-color: #E4EBFF;">
+    <div class="order-items">
+        @foreach (session('produk', []) as $id_produk => $item)
+        @php $product = \App\Models\produk::find($item['id_produk']); @endphp
+        <div class="order-item py-3 px-3">
+            <div class="row align-items-center">
+                <div class="col-3">
+                    <div class="fw-bold">@if($product)
+                        {{ $product->nama_produk }}
+                    @endif</div>
+                </div>
+                <div class="col-3 text-center">
+                    <div>{{ isset($item['harga_jual']) ? 'Rp. ' . number_format($item['harga_jual'], 0) : '' }}</div>
+                </div>
+                <div class="col-3">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <form action="{{ route('kurang-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                        </form>
+                        <span class="mx-2 fw-bold">{{ $item['jumlah_produk'] }}</span>
+                        <form action="{{ route('tambah-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
+                <div class="col-3 text-end">
+                    <div>
+                        {{ (isset($item['harga_jual']) && isset($item['jumlah_produk'])) ? 'Rp. ' . number_format($item['harga_jual'] * $item['jumlah_produk'], 0) : '' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
 
-                <div class="card-footer p-3" style="border-radius:0 0 15px 15px; border-top: 1px solid #dee2e6; background-color: #E4EBFF;">
+                <div class="card-footer p-3 mt-auto" style="border-radius:0 0 15px 15px; border-top: 1px solid #dee2e6; background-color: #E4EBFF;">
                     <div class="row mb-2">
                         <div class="col-4">Diskon</div>
                         <div class="col-8 text-end">Rp 0</div>
@@ -280,4 +318,49 @@
 </div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('update_status'))
+            showToast('{{ session('update_message') }}', '{{ session('update_status') }}');
+        @endif
+    });
+
+    function showToast(message, type = 'error') {
+        const toastContainer = document.querySelector('.toast-container');
+        
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        let iconClass = type === 'error' ? 'bi-exclamation-circle' : 'bi-check-circle';
+        
+        toast.innerHTML = `
+            <div class="toast-icon">
+                <i class="bi ${iconClass}"></i>
+            </div>
+            <div class="toast-message">${message}</div>
+            <div class="toast-close" onclick="closeToast(this.parentElement)">
+                <i class="bi bi-x"></i>
+            </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+        
+        setTimeout(() => {
+            closeToast(toast);
+        }, 1000);
+    }
+    
+    function closeToast(toast) {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.parentElement.removeChild(toast);
+            }
+        }, 300);
+    }
+</script>
 @endsection
