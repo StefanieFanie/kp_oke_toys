@@ -29,6 +29,7 @@ class PenjualanController extends Controller
             'cari' => $request->cari
         ]);
     }
+
     public function simpan(Request $request, $id_produk) {    
         $jumlahProduk = (int) $request->jumlah_produk;
         
@@ -45,10 +46,18 @@ class PenjualanController extends Controller
         $hargaJual = $product->harga_jual;
 
         $stok = $product->stok;
-
-        if ($userInputQuantity > $stok) {
+        
+        $existingInCart = 0;
+        foreach ($produk as $item) {
+            if ($item['id_produk'] == $id_produk) {
+                $existingInCart = $item['jumlah_produk'];
+                break;
+            }
+        }
+        
+        if (($existingInCart + $userInputQuantity) > $stok) {
             session()->flash('update_status', 'error');
-            session()->flash('update_message', 'Stok tidak cukup');
+            session()->flash('update_message', 'Stok tidak cukup (sudah ada '.$existingInCart.' di keranjang)');
             return redirect(route('kasir'));
         }
 
@@ -80,6 +89,7 @@ class PenjualanController extends Controller
         session(['produk' => $produk]);
         return redirect(route('kasir'));
     }
+    
 
     public function hapusSemuaProduk()
     {
@@ -92,18 +102,26 @@ class PenjualanController extends Controller
     public function tambahJumlah($id_produk)
     {
         $produk = session('produk', []);
+        $currentQuantity = 0;
         
+        foreach ($produk as $item) {
+            if ($item['id_produk'] == $id_produk) {
+                $currentQuantity = $item['jumlah_produk'];
+                break;
+            }
+        }
+        
+        $product = Produk::find($id_produk);
+        $stok = $product->stok;
+        
+        if (($currentQuantity + 1) > $stok) {
+            session()->flash('update_status', 'error');
+            session()->flash('update_message', 'Stok tidak cukup');
+            return redirect(route('kasir'));
+        }
+
         foreach ($produk as $key => $item) {
             if ($item['id_produk'] == $id_produk) {
-                $product = Produk::find($id_produk);
-                $stok = $product->stok;
-                
-                if ($produk[$key]['jumlah_produk'] >= $stok) {
-                    session()->flash('update_status', 'error');
-                    session()->flash('update_message', 'Stok tidak cukup');
-                    return redirect(route('kasir'));
-                }
-                
                 $produk[$key]['jumlah_produk'] += 1;
                 $produk[$key]['total_harga'] = $produk[$key]['jumlah_produk'] * $produk[$key]['harga_jual'];
                 break;
@@ -113,6 +131,7 @@ class PenjualanController extends Controller
         session(['produk' => $produk]);
         return redirect(route('kasir'));
     }
+
     
     public function kurangJumlah($id_produk)
     {

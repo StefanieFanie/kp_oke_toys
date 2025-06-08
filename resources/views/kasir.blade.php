@@ -246,43 +246,47 @@
                     </form>
                 </div>
 
-                <div class="card-body p-0 flex-grow-1 overflow-auto" style="background-color: #E4EBFF;">
-                    <div class="order-items">
-                        @foreach (session('produk', []) as $id_produk => $item)
-                        @php $product = \App\Models\produk::find($item['id_produk']); @endphp
-                        <div class="order-item py-3 px-3">
-                            <div class="row align-items-center">
-                                <div class="col-4">
-                                    <div class="fw-bold">@if($product)
+<div class="card-body p-0 flex-grow-1 overflow-auto" style="background-color: #E4EBFF;">
+    <div class="order-items">
+        @foreach (session('produk', []) as $id_produk => $item)
+        @php $product = \App\Models\produk::find($item['id_produk']); @endphp
+        <div class="order-item py-3 px-3">
+            <div class="row align-items-center">
+                <div class="col-3">
+                    <div class="fw-bold">@if($product)
                         {{ $product->nama_produk }}
-                        @endif
-                    </div>
-                                </div>
-                                <div class="col-4 text-center">
-                                    <div>{{ isset($item['harga_jual']) ? 'Rp. ' . number_format($item['harga_jual'], 0) : '' }}</div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="d-flex align-items-center justify-content-end">
-                                        <form action="{{ route('kurang-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                                <i class="bi bi-dash"></i>
-                                            </button>
-                                        </form>
-                                        <span class="mx-2 fw-bold">{{ $item['jumlah_produk'] }}</span>
-                                        <form action="{{ route('tambah-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                                <i class="bi bi-plus"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
+                    @endif</div>
+                </div>
+                <div class="col-3 text-center">
+                    <div>{{ isset($item['harga_jual']) ? 'Rp. ' . number_format($item['harga_jual'], 0) : '' }}</div>
+                </div>
+                <div class="col-3">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <form action="{{ route('kurang-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                        </form>
+                        <span class="mx-2 fw-bold">{{ $item['jumlah_produk'] }}</span>
+                        <form action="{{ route('tambah-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
+                <div class="col-3 text-end">
+                    <div>
+                        {{ (isset($item['harga_jual']) && isset($item['jumlah_produk'])) ? 'Rp. ' . number_format($item['harga_jual'] * $item['jumlah_produk'], 0) : '' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
 
                 <div class="card-footer p-3 mt-auto" style="border-radius:0 0 15px 15px; border-top: 1px solid #dee2e6; background-color: #E4EBFF;">
                     <div class="row mb-2">
