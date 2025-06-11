@@ -291,26 +291,30 @@
                 <div class="card-footer p-3 mt-auto" style="border-radius:0 0 15px 15px; border-top: 1px solid #dee2e6; background-color: #E4EBFF;">
                     <div class="row mb-2">
                         <div class="col-4">Diskon</div>
-                        <div class="col-8 text-end">Rp 0</div>
+                        <div class="col-8 text-end" id="diskonValue">Rp 0</div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-4"><strong>Total Harga</strong></div>
-                        <div class="col-8 text-end"><strong>Rp 85.000</strong></div>
+                        <div class="col-8 text-end"><strong id="totalHarga">
+                            Rp {{ number_format(session('produk') ? array_sum(array_map(function($item) { 
+                                return $item['harga_jual'] * $item['jumlah_produk']; 
+                            }, session('produk'))) : 0, 0) }}
+                        </strong></div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-4">Bayar</div>
                         <div class="col-8 text-end">
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
-                                <input type="text" class="form-control text-end" value="100000">
+                                <input type="text" id="inputBayar" class="form-control text-end" value="0" onkeyup="hitungKembalian()" onchange="hitungKembalian()">
                             </div>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-4">Kembalian</div>
-                        <div class="col-8 text-end">Rp 15.000</div>
+                        <div class="col-8 text-end" id="kembalianValue">Rp 0</div>
                     </div>
-                    <button class="btn w-100 text-white" style="background-color: #1F9B30;">Bayar</button>
+                    <button class="btn w-100 text-white" id="btnBayar" style="background-color: #1F9B30;">Bayar</button>
                 </div>
             </div>
         </div>
@@ -323,7 +327,71 @@
         @if(session('update_status'))
             showToast('{{ session('update_message') }}', '{{ session('update_status') }}');
         @endif
+        
+        hitungTotal();
+        hitungKembalian();
+        
+        const diskonResellerToggle = document.getElementById('diskonReseller');
+        diskonResellerToggle.addEventListener('change', function() {
+            hitungTotal();
+            hitungKembalian();
+        });
+        
+        const inputBayar = document.getElementById('inputBayar');
+        inputBayar.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value !== '') {
+                value = parseInt(value, 10).toLocaleString('id-ID');
+            }
+            this.value = value;
+        });
     });
+
+    function hitungTotal() {
+        @php
+        $totalHarga = 0;
+        if (session('produk')) {
+            foreach (session('produk') as $item) {
+                $totalHarga += $item['harga_jual'] * $item['jumlah_produk'];
+            }
+        }
+        @endphp
+        
+        let totalHarga = {{ $totalHarga }};
+        let diskon = 0;
+        
+        if (document.getElementById('diskonReseller').checked) {
+            diskon = Math.round(totalHarga * 0.1);
+        }
+        
+        document.getElementById('diskonValue').textContent = 'Rp ' + diskon.toLocaleString('id-ID');
+        document.getElementById('totalHarga').textContent = 'Rp ' + (totalHarga - diskon).toLocaleString('id-ID');
+        
+        return totalHarga - diskon;
+    }
+    
+    function hitungKembalian() {
+        const total = hitungTotal();
+        let bayar = document.getElementById('inputBayar').value.replace(/\D/g, '') || 0;
+        bayar = parseInt(bayar, 10);
+        
+        const kembalian = bayar - total;
+        
+        if (kembalian >= 0) {
+            document.getElementById('kembalianValue').textContent = 'Rp ' + kembalian.toLocaleString('id-ID');
+        } else {
+            document.getElementById('kembalianValue').textContent = 'Rp 0';
+        }
+        
+        const btnBayar = document.getElementById('btnBayar');
+        if (bayar >= total && total > 0) {
+            btnBayar.disabled = false;
+            btnBayar.style.opacity = 1;
+        } else {
+            btnBayar.disabled = true;
+            btnBayar.style.opacity = 0.5;
+        }
+    }
 
     function showToast(message, type = 'error') {
         const toastContainer = document.querySelector('.toast-container');
@@ -351,7 +419,7 @@
         
         setTimeout(() => {
             closeToast(toast);
-        }, 1000);
+        }, 3000);
     }
     
     function closeToast(toast) {
