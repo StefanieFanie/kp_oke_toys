@@ -62,10 +62,10 @@
 </style>
 @section('content')
     <h3 class="mb-4"><b>Oke Toys - Stok Masuk</b></h3>
-    <h3 class="mb-4"><b>Formulir Input Stok Masuk</b></h3>
     <div id="halaman1">
         <form method="POST" action="{{ route('temp-tambah-stok-masuk') }}">
             @csrf
+            <h3 class="mb-4"><b>Formulir Input Stok Masuk</b></h3>
             <div class="mb-3">
                 <label for="tanggal" class="form-label">Tanggal Stok Masuk</label>
                 <input type="date" class="form-control" id="tanggal" name="tanggal" value="{{ $temp_stok_masuk['tanggal'] ?? old('tanggal') }}" autocomplete="off" required>
@@ -88,7 +88,7 @@
                     @endforelse
                 </select>
             </div>
-            <button type="submit" id="button_selanjutnya" onclick="halamanSelanjutnya()" class="btn btn1" style="float:right" disabled>Selanjutnya</button>
+            <button type="submit" id="button_selanjutnya" onclick="sessionStorage.setItem('donePage1', 'true')" class="btn btn1" style="float:right" disabled>Selanjutnya</button>
         </form>
     </div>
     <div id="halaman2" class="hidden">
@@ -174,9 +174,10 @@
             </div>
             <div class="mb-3">
                 <label for="tanggal-jatuh-tempo" class="form-label">Tanggal Jatuh Tempo</label>
-                <input type="date" class="form-control" id="tanggal_jatuh_tempo" name="tanggal_jatuh_tempo" autocomplete="off" required>
+                <input type="date" class="form-control" id="tanggal_jatuh_tempo" name="tanggal_jatuh_tempo" autocomplete="off" readonly required>
             </div>
-            <button type="submit" onclick="simpanStokMasuk()" class="btn btn1" style="float:right">Selesai</button>
+            <button type="submit" id="button_sebelumnya" onclick="halamanSebelumnya()" class="btn btn1">Sebelumnya</button>
+            <button type="submit" onclick="simpanStokMasuk(); sessionStorage.setItem('donePage1', 'false')" class="btn btn1" style="float:right">Selesai</button>
         </form>
     </div>
     <script>
@@ -196,25 +197,24 @@
         pilih_supplier.addEventListener('input', cekIsiInput);
 
         document.addEventListener('DOMContentLoaded', function() {
+            const done_page_1 = sessionStorage.getItem('donePage1');
+            console.log(done_page_1);
+            if (done_page_1 === 'true') {
+                document.getElementById('halaman1').style.display = 'none';
+                document.getElementById('halaman2').style.display = 'block';
+            } else {
+                document.getElementById('halaman1').style.display = 'block';
+                document.getElementById('halaman2').style.display = 'none';
+            }
             if (document.getElementById('select-produk')) {
                 new TomSelect("#select-produk");
             }
         });
 
-        const done_page_1 = sessionStorage.getItem('donePage1');
-
-        if (done_page_1 === 'true') {
-            document.getElementById('halaman1').style.display = 'none';
-            document.getElementById('halaman2').style.display = 'block';
-        } else {
+        function halamanSebelumnya() {
             document.getElementById('halaman1').style.display = 'block';
             document.getElementById('halaman2').style.display = 'none';
-        }
-
-        function halamanSelanjutnya() {
-            sessionStorage.setItem('donePage1', 'true');
-            document.getElementById('halaman1').style.display = 'none';
-            document.getElementById('halaman2').style.display = 'block';
+            button_selanjutnya.disabled = false;
         }
 
         function edit(id_produk) {
@@ -240,6 +240,21 @@
             edit_button.style.display = 'inline-block';
             document.getElementById(`hidden-jumlah-${id_produk}`).value = input.value;
         }
+
+        const tanggalJatuhTempo = @json(session('stok_masuk_temp.tanggal'));
+
+        function cekCatatanPembayaran() {
+            const catatan_pembayaran = document.getElementById('catatan_pembayaran').value;
+            const tanggal_jatuh_tempo = document.getElementById('tanggal_jatuh_tempo');
+            if (catatan_pembayaran === 'Cash') {;
+                tanggal_jatuh_tempo.value = tanggalJatuhTempo;
+                tanggal_jatuh_tempo.readOnly = true;
+            } else {
+                tanggal_jatuh_tempo.readOnly = false;
+            }
+        }
+
+        document.getElementById('catatan_pembayaran').addEventListener('change', cekCatatanPembayaran);
 
         function simpanStokMasuk() {
             sessionStorage.setItem('donePage1', 'false');
