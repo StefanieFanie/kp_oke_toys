@@ -12,7 +12,7 @@ use App\Models\StokMasukProduk;
 class StokMasukController extends Controller
 {
     function show() {
-        $data = StokMasuk::all();
+        $data = StokMasuk::orderBy('id', 'desc')->get();
         return view('stok-masuk.stok-masuk', ['stok_masuk' => $data]);
     }
 
@@ -84,12 +84,16 @@ class StokMasukController extends Controller
         if (empty($temp_stok_masuk) || empty($temp_stok_masuk_produk)) {
             return back()->with('error', 'Tidak ada');
         }
+        $catatan = $request->catatan_pembayaran;
         $stok_masuk = StokMasuk::create([
             'tanggal' => $temp_stok_masuk['tanggal'],
             'id_supplier' => $temp_stok_masuk['id_supplier'],
-            'catatan' => $request->catatan_pembayaran,
+            'total' => $total,
+            'catatan' => $catatan,
             'tanggal_jatuh_tempo' => $request->tanggal_jatuh_tempo,
-            'total' => $total
+            'tanggal_bayar' => $request->tanggal_jatuh_tempo,
+            'metode_pembayaran' => $catatan === 'Cash' ? 'Cash' : '-',
+            'status' => $catatan === 'Cash' ? "1" : "0"
         ]);
         foreach($temp_stok_masuk_produk as $item) {
             StokMasukProduk::create([
