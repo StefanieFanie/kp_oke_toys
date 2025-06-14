@@ -16,6 +16,27 @@ class StokMasukController extends Controller
         return view('stok-masuk.stok-masuk', ['stok_masuk' => $data]);
     }
 
+    public function showInfo($id) {
+        $data_supplier = Supplier::all();
+        $data_stok_masuk = StokMasuk::find($id);
+        $data_produk = Produk::all();
+        $data_stok_masuk_produk = $data_stok_masuk->stokMasukProduk;
+        return view('stok-masuk.rincian-stok-masuk', [
+            'stok_masuk' => $data_stok_masuk,
+            'supplier' => $data_supplier,
+            'produk' => $data_produk,
+            'stok_masuk_produk' => $data_stok_masuk_produk
+        ]);
+    }
+
+    function selesaikanDanSimpan(Request $request, $id) {
+        $data['metode_pembayaran'] = $request->metode_pembayaran;
+        $data['tanggal_bayar'] = $request->tanggal_bayar;
+        $data['status'] = 1;
+        StokMasuk::find($id)->update($data);
+        return redirect(route('stok-masuk'))->with('success', 'Status berhasil diupdate menjadi selesai');
+    }
+
     public function input() {
         $data_supplier = Supplier::all();
         $data_produk = Produk::all();
@@ -92,7 +113,7 @@ class StokMasukController extends Controller
             'catatan' => $catatan,
             'tanggal_jatuh_tempo' => $request->tanggal_jatuh_tempo,
             'tanggal_bayar' => $request->tanggal_jatuh_tempo,
-            'metode_pembayaran' => $catatan === 'Cash' ? 'Cash' : '-',
+            'metode_pembayaran' => $request->metode_pembayaran,
             'status' => $catatan === 'Cash' ? "1" : "0"
         ]);
         foreach($temp_stok_masuk_produk as $item) {
