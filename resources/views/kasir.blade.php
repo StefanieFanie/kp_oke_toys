@@ -145,7 +145,7 @@
             <div class="d-flex align-items-center me-3">
                 <span class="me-2"><b>Diskon reseller</b></span>
                 <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="diskonReseller" style="width: 48px; height: 24px;">
+                    <input class="form-check-input" type="checkbox" role="switch" id="toggle-diskon-reseller" name="toggle-diskon-reseller" style="width: 48px; height: 24px;">
                 </div>
             </div>
             <div class="d-flex align-items-center">
@@ -296,8 +296,8 @@
                     <div class="row mb-2">
                         <div class="col-4"><strong>Total Harga</strong></div>
                         <div class="col-8 text-end"><strong id="totalHarga">
-                            Rp {{ number_format(session('produk') ? array_sum(array_map(function($item) { 
-                                return $item['harga_jual'] * $item['jumlah_produk']; 
+                            Rp {{ number_format(session('produk') ? array_sum(array_map(function($item) {
+                                return $item['harga_jual'] * $item['jumlah_produk'];
                             }, session('produk'))) : 0, 0) }}
                         </strong></div>
                     </div>
@@ -323,20 +323,35 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 
 <script>
+    let diskonResellerAktif = false;
+
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Diskon value dari controller: ', {{ $diskon_reseller ?? 0 }});
+
         @if(session('update_status'))
             showToast('{{ session('update_message') }}', '{{ session('update_status') }}');
         @endif
-        
+
+        loadDiskonState();
         hitungTotal();
         hitungKembalian();
-        
-        const diskonResellerToggle = document.getElementById('diskonReseller');
-        diskonResellerToggle.addEventListener('change', function() {
-            hitungTotal();
-            hitungKembalian();
-        });
-        
+
+        const diskonResellerToggle = document.getElementById('toggle-diskon-reseller');
+        if (diskonResellerToggle) {
+            diskonResellerToggle.addEventListener('change', function() {
+                diskonResellerAktif = this.checked;
+                saveDiskonState();
+                hitungTotal();
+                hitungKembalian();
+
+                if (this.checked) {
+                    showToast('Diskon reseller diaktifkan', 'success');
+                } else {
+                    showToast('Diskon reseller dinonaktifkan', 'success');
+                }
+            });
+        }
+
         const inputBayar = document.getElementById('inputBayar');
         inputBayar.addEventListener('input', function(e) {
             let value = this.value.replace(/\D/g, '');
@@ -347,6 +362,18 @@
         });
     });
 
+    function loadDiskonState() {
+        const saved = localStorage.getItem('diskon_reseller_aktif');
+        if (saved !== null) {
+            diskonResellerAktif = saved === 'true';
+            document.getElementById('toggle-diskon-reseller').checked = diskonResellerAktif;
+        }
+    }
+
+    function saveDiskonState() {
+        localStorage.setItem('diskon_reseller_aktif', diskonResellerAktif.toString());
+    }
+
     function hitungTotal() {
         @php
         $totalHarga = 0;
@@ -356,33 +383,36 @@
             }
         }
         @endphp
-        
+
         let totalHarga = {{ $totalHarga }};
         let diskon = 0;
-        
-        if (document.getElementById('diskonReseller').checked) {
-            diskon = Math.round(totalHarga * 0.1);
+
+        if (diskonResellerAktif) {
+            let persentaseDiskon = {{ $diskon_reseller ?? 0 }};
+            diskon = Math.round(totalHarga * (persentaseDiskon / 100));
+            console.log('Diskon aktif! Total: ', totalHarga,
+            ', diskon (%): ', persentaseDiskon, ', diskon (Rp): ', diskon);
         }
-        
+
         document.getElementById('diskonValue').textContent = 'Rp ' + diskon.toLocaleString('id-ID');
         document.getElementById('totalHarga').textContent = 'Rp ' + (totalHarga - diskon).toLocaleString('id-ID');
-        
+
         return totalHarga - diskon;
     }
-    
+
     function hitungKembalian() {
         const total = hitungTotal();
         let bayar = document.getElementById('inputBayar').value.replace(/\D/g, '') || 0;
         bayar = parseInt(bayar, 10);
-        
+
         const kembalian = bayar - total;
-        
+
         if (kembalian >= 0) {
             document.getElementById('kembalianValue').textContent = 'Rp ' + kembalian.toLocaleString('id-ID');
         } else {
             document.getElementById('kembalianValue').textContent = 'Rp 0';
         }
-        
+
         const btnBayar = document.getElementById('btnBayar');
         if (bayar >= total && total > 0) {
             btnBayar.disabled = false;
@@ -395,12 +425,12 @@
 
     function showToast(message, type = 'error') {
         const toastContainer = document.querySelector('.toast-container');
-        
+
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        
+
         let iconClass = type === 'error' ? 'bi-exclamation-circle' : 'bi-check-circle';
-        
+
         toast.innerHTML = `
             <div class="toast-icon">
                 <i class="bi ${iconClass}"></i>
@@ -410,18 +440,18 @@
                 <i class="bi bi-x"></i>
             </div>
         `;
-        
+
         toastContainer.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.classList.add('show');
         }, 10);
-        
+
         setTimeout(() => {
             closeToast(toast);
         }, 3000);
     }
-    
+
     function closeToast(toast) {
         toast.classList.remove('show');
         setTimeout(() => {
