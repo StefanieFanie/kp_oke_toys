@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Produk;
 use App\Models\kategori;
 
@@ -11,7 +12,14 @@ class PenjualanController extends Controller
     function show() {
         $data = Produk::orderBy('id', 'desc')->where('stok', '>', 0)->get();
         $kategori = Kategori::all();
-        return view('kasir', ['produk' => $data, 'kategori' => $kategori]);
+        $diskon_reseller = 0;
+        $path = 'diskon_reseller.json';
+        if (Storage::exists($path)) {
+            $file = Storage::get($path);
+            $data_json = json_decode($file, true);
+            $diskon_reseller = $data_json['diskon_reseller'] ?? 0;
+        }
+        return view('kasir', ['produk' => $data, 'kategori' => $kategori, 'diskon_reseller' => $diskon_reseller]);
     }
 
     public function cari(Request $request) {
@@ -22,17 +30,43 @@ class PenjualanController extends Controller
         if ($request->filled('kategori') && $request->kategori !== 'semua') {
             $produks->where('id_kategori', $request->kategori)->where('stok', '>', 0);
         }
+        $diskon_reseller = 0;
+        $path = 'diskon_reseller.json';
+        if (Storage::exists($path)) {
+            $file = Storage::get($path);
+            $data_json = json_decode($file, true);
+            $diskon_reseller = $data_json['diskon_reseller'] ?? 0;
+        }
         return view('kasir', [
             'produk' => $produks->orderBy('id', 'desc')->where('stok', '>', 0)->get(),
             'kategori' => Kategori::orderBy('id')->get(),
             'selected_kategori' => $request->kategori,
-            'cari' => $request->cari
+            'cari' => $request->cari,
+            'diskon_reseller' => $diskon_reseller
         ]);
     }
 
-    public function simpan(Request $request, $id_produk) {    
+    public function toggleDiskonReseller(Request $request) {
+        $diskon_reseller = 0;
+        $path = 'diskon_reseller.json';
+        if (Storage::exists($path)) {
+            $file = Storage::get($path);
+            $data_json = json_decode($file, true);
+            $diskon_reseller = $data_json['diskon_reseller'] ?? null;
+        } else {
+            $diskon_reseller = "File JSON tidak dapat ditemukan";
+        }
+        $kategori = Kategori::all();
+        return view('kasir', [
+            'produk' => $produks->orderBy('id', 'desc')->where('stok', '>', 0)->get(),
+            'kategori' => Kategori::orderBy('id')->get(),
+            'diskon_reseller' => $diskon_reseller
+        ]);
+    }
+
+    public function simpan(Request $request, $id_produk) {
         $jumlahProduk = (int) $request->jumlah_produk;
-        
+
         if ($jumlahProduk == 0) {
             session()->flash('update_status', 'error');
             session()->flash('update_message', 'Jumlah produk tidak boleh 0');
@@ -46,7 +80,7 @@ class PenjualanController extends Controller
         $hargaJual = $product->harga_jual;
 
         $stok = $product->stok;
-        
+
         $existingInCart = 0;
         foreach ($produk as $item) {
             if ($item['id_produk'] == $id_produk) {
@@ -54,7 +88,7 @@ class PenjualanController extends Controller
                 break;
             }
         }
-        
+
         if (($existingInCart + $userInputQuantity) > $stok) {
             session()->flash('update_status', 'error');
             session()->flash('update_message', 'Stok tidak cukup (sudah ada '.$existingInCart.' di keranjang)');
@@ -68,7 +102,7 @@ class PenjualanController extends Controller
                 break;
             }
         }
-        
+
         if ($index !== null) {
             $produk[$index]['jumlah_produk'] += $userInputQuantity;
             $produk[$index]['harga_modal'] = $hargaModal;
@@ -89,7 +123,7 @@ class PenjualanController extends Controller
         session(['produk' => $produk]);
         return redirect(route('kasir'));
     }
-    
+
 
     public function hapusSemuaProduk()
     {
@@ -98,22 +132,22 @@ class PenjualanController extends Controller
         session()->flash('update_message', 'Keranjang berhasil dikosongkan');
         return redirect(route('kasir'));
     }
-    
+
     public function tambahJumlah($id_produk)
     {
         $produk = session('produk', []);
         $currentQuantity = 0;
-        
+
         foreach ($produk as $item) {
             if ($item['id_produk'] == $id_produk) {
                 $currentQuantity = $item['jumlah_produk'];
                 break;
             }
         }
-        
+
         $product = Produk::find($id_produk);
         $stok = $product->stok;
-        
+
         if (($currentQuantity + 1) > $stok) {
             session()->flash('update_status', 'error');
             session()->flash('update_message', 'Stok tidak cukup');
@@ -127,16 +161,16 @@ class PenjualanController extends Controller
                 break;
             }
         }
-        
+
         session(['produk' => $produk]);
         return redirect(route('kasir'));
     }
 
-    
+
     public function kurangJumlah($id_produk)
     {
         $produk = session('produk', []);
-        
+
         foreach ($produk as $key => $item) {
             if ($item['id_produk'] == $id_produk) {
                 if ($produk[$key]['jumlah_produk'] > 1) {
@@ -149,7 +183,7 @@ class PenjualanController extends Controller
                 break;
             }
         }
-        
+
         session(['produk' => $produk]);
         return redirect(route('kasir'));
     }
