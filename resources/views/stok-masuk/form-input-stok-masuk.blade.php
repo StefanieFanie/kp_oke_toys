@@ -176,6 +176,10 @@
                 <label for="tanggal-jatuh-tempo" class="form-label">Tanggal Jatuh Tempo</label>
                 <input type="date" class="form-control" id="tanggal_jatuh_tempo" name="tanggal_jatuh_tempo" autocomplete="off" readonly required>
             </div>
+            <div class="mb-3">
+                <label for="metode-pembayaran" class="form-label">Metode Pembayaran</label>
+                <input type="text" class="form-control" id="metode_pembayaran" name="metode_pembayaran" autocomplete="off" readonly required>
+            </div>
             <button type="submit" id="button_sebelumnya" onclick="halamanSebelumnya()" class="btn btn1">Sebelumnya</button>
             <button type="submit" onclick="simpanStokMasuk(); sessionStorage.setItem('donePage1', 'false')" class="btn btn1" style="float:right">Selesai</button>
         </form>
@@ -249,8 +253,12 @@
             if (catatan_pembayaran === 'Cash') {;
                 tanggal_jatuh_tempo.value = tanggalJatuhTempo;
                 tanggal_jatuh_tempo.readOnly = true;
+                metode_pembayaran.readOnly = false;
+                metode_pembayaran.value = "";
             } else {
                 tanggal_jatuh_tempo.readOnly = false;
+                metode_pembayaran.readOnly = true;
+                metode_pembayaran.value = "-";
             }
         }
 

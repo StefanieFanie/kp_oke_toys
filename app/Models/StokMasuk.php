@@ -20,6 +20,10 @@ class StokMasuk extends Model
         'status'
     ];
 
+    public function stokMasukProduk(){
+        return $this->hasMany(StokMasukProduk::class, 'id_stok_masuk');
+    }
+
     public function supplier(){
         return $this->belongsTo(Supplier::class, 'id_supplier');
     }
