@@ -9,7 +9,7 @@ use App\Models\kategori;
 class ProdukController extends Controller
 {
     function show() {
-        $data = Produk::orderBy('id', 'desc')->get();
+        $data = Produk::orderBy('id', 'desc')->paginate(9);
         $kategori = Kategori::all();
         return view('produk.produk', ['produk' => $data, 'kategori' => $kategori]);
     }
@@ -119,7 +119,7 @@ class ProdukController extends Controller
             $produks->where('id_kategori', $request->kategori);
         }
         return view('produk.produk', [
-            'produk' => $produks->orderBy('id', 'desc')->get(),
+            'produk' => $produks->orderBy('id', 'desc')->paginate(9),
             'kategori' => Kategori::orderBy('id')->get(),
             'selected_kategori' => $request->kategori,
             'cari' => $request->cari
@@ -127,7 +127,7 @@ class ProdukController extends Controller
     }
 
     public function tampilStokRendah() {
-        $produks = Produk::where('stok', '<', 6)->orderBy('stok', 'asc')->get();
+        $produks = Produk::where('stok', '<', 6)->orderBy('stok', 'asc')->paginate(9);
         $informasi = "Daftar Produk dengan Stok Rendah";
         return view('produk.produk', [
             'produk' => $produks,

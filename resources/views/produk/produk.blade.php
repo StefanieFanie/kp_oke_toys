@@ -166,6 +166,9 @@
             </tbody>
         </table>
     </div>
+    <div class="d-flex justify-content-start">
+        {{ $produk->links('pagination::bootstrap-5') }}
+    </div>
     <a href="{{ route('tambah-produk') }}" class="btn btn-tambah-produk">+ Tambah Produk</a>
 </div>
 <script>
