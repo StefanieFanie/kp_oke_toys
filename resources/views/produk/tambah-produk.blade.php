@@ -70,7 +70,7 @@
         function hitungHargaJual() {
             const hargaModal = parseInt(hargaModalInput.value) || 0;
             const persentaseKeuntungan = parseInt(persentaseKeuntunganInput.value)/100 || 0;
-            hargaJual.value = hargaModal + hargaModal*persentaseKeuntungan;
+            hargaJual.value = (hargaModal + hargaModal*persentaseKeuntungan).toFixed(0);
         }
 
         hargaModalInput.addEventListener('input', hitungHargaJual);

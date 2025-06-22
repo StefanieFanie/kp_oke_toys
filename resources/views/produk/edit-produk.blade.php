@@ -51,11 +51,11 @@
         </div>
         <div class="mb-3">
             <label for="persentase_keuntungan" class="form-label">Persentase Keuntungan (%)</label>
-            <input type="number" class="form-control" id="persentase_keuntungan" name="persentase_keuntungan" required>
+            <input type="number" class="form-control" id="persentase_keuntungan" name="persentase_keuntungan" value="{{ isset($produk) ? $produk->persentase_keuntungan : '' }}" required>
         </div>
         <div class="mb-3">
             <label for="harga_jual" class="form-label">Harga Jual</label>
-            <input type="number" class="form-control" id="harga_jual" name="harga_jual" value="{{ isset($produk) ? $produk->harga_jual : '' }}" required>
+            <input type="number" class="form-control" id="harga_jual" name="harga_jual" value="{{ isset($produk) ? $produk->harga_jual : '' }}" required readonly>
         </div>
         <button type="submit" class="btn btn-simpan">Simpan</button>
     </form>
@@ -69,7 +69,7 @@
         function hitungHargaJual() {
             const hargaModal = parseInt(hargaModalInput.value) || 0;
             const persentaseKeuntungan = parseInt(persentaseKeuntunganInput.value)/100 || 0;
-            hargaJual.value = hargaModal + hargaModal*persentaseKeuntungan;
+            hargaJual.value = (hargaModal + hargaModal*persentaseKeuntungan).toFixed(0);
         }
 
         hargaModalInput.addEventListener('input', hitungHargaJual);
