@@ -17,6 +17,7 @@ class Produk extends Model
         'id_kategori',
         'stok',
         'harga_modal',
+        'persentase_keuntungan',
         'harga_jual'
     ];
 

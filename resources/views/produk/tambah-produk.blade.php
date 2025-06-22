@@ -51,10 +51,30 @@
             <input type="number" class="form-control" id="harga_modal" name="harga_modal" required>
         </div>
         <div class="mb-3">
+            <label for="persentase_keuntungan" class="form-label">Persentase Keuntungan (%)</label>
+            <input type="number" class="form-control" id="persentase_keuntungan" name="persentase_keuntungan" required>
+        </div>
+        <div class="mb-3">
             <label for="harga_jual" class="form-label">Harga Jual</label>
-            <input type="number" class="form-control" id="harga_jual" name="harga_jual" required>
+            <input type="number" class="form-control" id="harga_jual" name="harga_jual" readonly>
         </div>
         <button type="submit" class="btn btn-simpan">Simpan</button>
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const hargaModalInput = document.getElementById('harga_modal');
+        const persentaseKeuntunganInput = document.getElementById('persentase_keuntungan');
+        const hargaJual = document.getElementById('harga_jual');
+
+        function hitungHargaJual() {
+            const hargaModal = parseInt(hargaModalInput.value) || 0;
+            const persentaseKeuntungan = parseInt(persentaseKeuntunganInput.value)/100 || 0;
+            hargaJual.value = hargaModal + hargaModal*persentaseKeuntungan;
+        }
+
+        hargaModalInput.addEventListener('input', hitungHargaJual);
+        persentaseKeuntunganInput.addEventListener('input', hitungHargaJual);
+    });
+</script>
 @endsection

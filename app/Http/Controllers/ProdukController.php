@@ -30,11 +30,15 @@ class ProdukController extends Controller
                 if ($request->harga_modal == 0 || $request->harga_jual == 0) {
                     return redirect()->back()->with('error', 'Harga tidak boleh 0');
                 }
+                if ($request->persentase_keuntungan < 0 || $request->persentase_keuntungan > 50) {
+                    return redirect()->back()->with('error', 'Persentase keuntungan harus di antara 0-50');
+                }
                 $existingProduct->restore();
                 $existingProduct->update([
                     'foto_produk' => $request->hasFile('foto_produk') ? $request->file('foto_produk')->store('foto','public') : 'foto-produk/image-fill.svg',
                     'id_kategori' => $request->id_kategori,
                     'harga_modal' => $request->harga_modal,
+                    'persentase_keuntungan' => $request->persentase_keuntungan,
                     'harga_jual' => $request->harga_jual
                 ]);
             } else {
@@ -45,12 +49,16 @@ class ProdukController extends Controller
             $data['foto_produk'] = $request->hasFile('foto_produk') ? $request->file('foto_produk')->store('foto','public') : 'foto-produk/image-fill.svg';
             $data['id_kategori'] = $request->id_kategori;
             $data['harga_modal'] = $request->harga_modal;
+            $data['persentase_keuntungan'] = $request->persentase_keuntungan;
             $data['harga_jual'] = $request->harga_jual;
             if ($data['harga_jual'] < $data['harga_modal']) {
                 return redirect()->back()->with('error', 'Harga jual tidak boleh lebih rendah daripada harga modal');
             }
             if ($data['harga_modal'] == 0 || $data['harga_jual'] == 0) {
                 return redirect()->back()->with('error', 'Harga tidak boleh 0');
+            }
+            if ($request->persentase_keuntungan < 0 || $request->persentase_keuntungan > 50) {
+                return redirect()->back()->with('error', 'Persentase keuntungan harus di antara 0-50');
             }
             $produk = Produk::create($data);
         }
@@ -81,12 +89,16 @@ class ProdukController extends Controller
         $data['foto_produk'] = $request->hasFile('foto_produk') ? $request->file('foto_produk')->store('foto', 'public') : 'foto-produk/image-fill.svg';
         $data['id_kategori'] = $request->id_kategori;
         $data['harga_modal'] = $request->harga_modal;
+        $data['persentase_keuntungan'] = $request->persentase_keuntungan;
         $data['harga_jual'] = $request->harga_jual;
         if ($data['harga_jual'] < $data['harga_modal']) {
             return redirect()->back()->with('error', 'Harga jual tidak boleh lebih rendah daripada harga modal');
         }
         if ($data['harga_modal'] == 0 || $data['harga_jual'] == 0) {
             return redirect()->back()->with('error', 'Harga tidak boleh 0');
+        }
+        if ($data['persentase_keuntungan'] < 0 || $data['persentase_keuntungan'] > 50) {
+            return redirect()->back()->with('error', 'Persentase keuntungan harus di antara 0-50');
         }
         Produk::find($id)->update($data);
         return redirect(route('produk'))->with('success', 'Data produk berhasil diperbarui.');
