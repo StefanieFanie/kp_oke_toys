@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/update-produk/{id}', [ProdukController::class, 'update'])->name('update-produk');
     Route::delete('/hapus-produk/{id}', [ProdukController::class, 'hapus'])->name('hapus-produk');
     Route::get('/cari-produk', [ProdukController::class, 'cari'])->name('cari-produk');
+    Route::get('/stok-rendah', [ProdukController::class, 'tampilStokRendah'])->name('stok-rendah');
     Route::get('/kategori', [KategoriController::class, 'show'])->name('kategori');
     Route::get('/kategori/tambah', [KategoriController::class, 'tambah'])->name('tambah-kategori');
     Route::get('/kategori/edit/{id}', [KategoriController::class, 'edit'])->name('edit-kategori');
