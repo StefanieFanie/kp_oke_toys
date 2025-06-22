@@ -64,10 +64,19 @@
         background-color: #2C3245 !important;
         color: white;
     }
+
+    .btn-stok-rendah {
+        background-color: #3B4B7A !important;
+        color: white !important;
+        box-shadow: 5px 5px 10px rgb(112, 112, 112);
+        float: right;
+    }
 </style>
 @section('content')
 <div>
-    <h3 class="mb-4"><b>Oke Toys - Produk</b></h3>
+    <h3 class="mb-4">
+        <b>Oke Toys - Produk</b>
+    </h3>
     <div class="d-flex">
         <form class="input-search" role="search" action="{{ route('cari-produk') }}" method="GET" style="width: 100%;">
             <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#3B4B7A" class="bi bi-search" viewBox="0 0 16 16">
@@ -94,12 +103,22 @@
                 </ul>
             </div>
         </form>
+        <a href="{{ route('stok-rendah') }}" class="btn btn-warning" style="width: 48px; height: 48px; margin-left: 6px; padding-right: 20px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-exclamation-lg" viewBox="0 0 24 16">
+                <path d="M7.005 3.1a1 1 0 1 1 1.99 0l-.388 6.35a.61.61 0 0 1-1.214 0zM7 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+            </svg>
+        </a>
     </div>
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif
+    @isset($informasi)
+        <h4 class="mb-4">
+            <b>{{ $informasi }}</b>
+        </h4>
+    @endisset
     <div class="table-responsive">
         <table class="table table-bordered border-secondary table-sm">
             <thead>
@@ -108,6 +127,7 @@
                     <th scope="col">Kategori</th>
                     <th scope="col">Harga Modal</th>
                     <th scope="col">Harga Jual</th>
+                    <th scope="col">Stok</th>
                     <th scope="col">Aksi</th>
                 </tr>
             </thead>
@@ -118,6 +138,7 @@
                         <td>{{ $item->kategori->nama_kategori }}</td>
                         <td>{{ $item->harga_modal }}</td>
                         <td>{{ $item->harga_jual }}</td>
+                        <td>{{ $item->stok }}</td>
                         <td>
                             <a class="btn btn-warning" role="button" href="{{ route('edit-produk', $item->id) }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">

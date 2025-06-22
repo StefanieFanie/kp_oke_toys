@@ -113,4 +113,14 @@ class ProdukController extends Controller
             'cari' => $request->cari
         ]);
     }
+
+    public function tampilStokRendah() {
+        $produks = Produk::where('stok', '<', 6)->orderBy('stok', 'asc')->get();
+        $informasi = "Daftar Produk dengan Stok Rendah";
+        return view('produk.produk', [
+            'produk' => $produks,
+            'kategori' => Kategori::orderBy('id')->get(),
+            'informasi' => $informasi
+        ]);
+    }
 }
