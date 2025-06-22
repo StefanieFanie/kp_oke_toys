@@ -132,6 +132,25 @@
             margin-bottom: 60px;
         }
     }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .spin {
+        animation: spin 1s linear infinite;
+    }
+
+    .custom-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #333;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+    }
 </style>
 
 <div class="toast-container"></div>
@@ -205,8 +224,6 @@
                             </thead>
                             <tbody>
                                 @forelse ($produk as $item)
-                                                <form id="formcart" method="POST" action="{{ route('simpan-penjualan', [ 'id_produk' => $item->id]) }}" data-harga-jual="{{ $item->harga_jual }}" data-stok="{{ $item->stok }}">
-@csrf
                                     <tr>
                                         <td class="align-middle text-center">
                                             <img src="{{ asset('storage/' . $item->foto_produk) }}" width="50px" height="50px">
@@ -215,15 +232,17 @@
                                         <td class="align-middle text-center">{{ $item->stok }}</td>
                                         <td class="align-middle text-center">Rp {{ $item->harga_jual }}</td>
                                         <td class="align-middle text-center" style="width: 100px;">
-                                            <input type="number" name="jumlah_produk" class="form-control-sm text-center" value="0" min="0" style="width: 60px; margin: 0 auto;">
+                                            <form class="cart-form" id="cart-form-{{ $item->id }}" action="{{ url('/kasir/simpan') }}/{{ $item->id }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <input type="number" name="jumlah_produk" class="form-control-sm text-center jumlah-input" value="0" min="1" max="{{ $item->stok }}" style="width: 60px; margin: 0 auto;" required>
+                                            </form>
                                         </td>
                                         <td class="align-middle text-center">
-                                            <button class="btn btn-md" type="submit" style="background-color: #A1C6FF; border:1px solid #8EABFF;box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
+                                            <button class="btn btn-md tambah-ke-keranjang" type="submit" form="cart-form-{{ $item->id }}" style="background-color: #A1C6FF; border:1px solid #8EABFF;box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
                                                 <i class="bi bi-basket"></i>
                                             </button>
                                         </td>
                                     </tr>
-                                </form>
                                 @empty
 
                                 @endforelse
@@ -238,15 +257,15 @@
             <div class="card d-flex flex-column" style="border-radius:16px; border: 1px solid #8EABFF; margin-top: -41px; height: calc(100vh - 66px); box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
                 <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #3B4B7A; padding: 12px 15px; border-radius: 15px 15px 0 0;">
                     <h5 class="mb-0">Daftar Pesanan</h5>
-                    <form action="{{ route('hapus-semua-produk') }}" method="POST" style="display: inline;">
+                    <form id="clear-cart-form" action="{{ route('hapus-semua-produk') }}" method="POST" style="display: inline;">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-danger" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
+                        <button type="submit" class="btn btn-sm btn-danger hapus-semua-keranjang" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
                             <i class="bi bi-trash"></i>
                         </button>
                     </form>
                 </div>
 
-<div class="card-body p-0 flex-grow-1 overflow-auto" style="background-color: #E4EBFF;">
+<div class="card-body p-0 flex-grow-1 overflow-auto" style="background-color: #E4EBFF;" id="keranjang-container">
     <div class="order-items">
         @foreach (session('produk', []) as $id_produk => $item)
         @php $product = \App\Models\produk::find($item['id_produk']); @endphp
@@ -258,20 +277,20 @@
                     @endif</div>
                 </div>
                 <div class="col-3 text-center">
-                    <div>{{ isset($item['harga_jual']) ? 'Rp. ' . number_format($item['harga_jual'], 0) : '' }}</div>
+                    <div>{{ isset($item['harga_jual']) ? 'Rp ' . number_format($item['harga_jual'], 0, '.', '.') : '' }}</div>
                 </div>
                 <div class="col-3">
                     <div class="d-flex align-items-center justify-content-center">
-                        <form action="{{ route('kurang-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
+                        <form class="cart-action-form" action="{{ url('/kasir/kurang-jumlah') }}/{{ $item['id_produk'] }}" method="POST" style="display: inline;">
                             @csrf
-                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded kurang-jumlah" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                 <i class="bi bi-dash"></i>
                             </button>
                         </form>
                         <span class="mx-2 fw-bold">{{ $item['jumlah_produk'] }}</span>
-                        <form action="{{ route('tambah-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
+                        <form class="cart-action-form" action="{{ url('/kasir/tambah-jumlah') }}/{{ $item['id_produk'] }}" method="POST" style="display: inline;">
                             @csrf
-                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded tambah-jumlah" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                 <i class="bi bi-plus"></i>
                             </button>
                         </form>
@@ -279,7 +298,7 @@
                 </div>
                 <div class="col-3 text-end">
                     <div>
-                        {{ (isset($item['harga_jual']) && isset($item['jumlah_produk'])) ? 'Rp. ' . number_format($item['harga_jual'] * $item['jumlah_produk'], 0) : '' }}
+                        {{ (isset($item['harga_jual']) && isset($item['jumlah_produk'])) ? 'Rp ' . number_format($item['harga_jual'] * $item['jumlah_produk'], 0, '.', '.') : '' }}
                     </div>
                 </div>
             </div>
@@ -298,7 +317,7 @@
                         <div class="col-8 text-end"><strong id="totalHarga">
                             Rp {{ number_format(session('produk') ? array_sum(array_map(function($item) {
                                 return $item['harga_jual'] * $item['jumlah_produk'];
-                            }, session('produk'))) : 0, 0) }}
+                            }, session('produk'))) : 0, 0, '.', '.') }}
                         </strong></div>
                     </div>
                     <div class="row mb-2">
@@ -335,6 +354,7 @@
         loadDiskonState();
         hitungTotal();
         hitungKembalian();
+        initCartEvents();
 
         const diskonResellerToggle = document.getElementById('toggle-diskon-reseller');
         if (diskonResellerToggle) {
@@ -362,6 +382,181 @@
         });
     });
 
+    function initCartEvents() {
+        document.querySelectorAll('.cart-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const button = document.querySelector(`button[form="${this.id}"]`);
+                if (button && button.disabled) return;
+                
+                const formData = new FormData(this);
+                const jumlah = parseInt(formData.get('jumlah_produk'));
+                
+                if (jumlah <= 0) {
+                    showToast('Jumlah produk harus lebih dari 0', 'error');
+                    return;
+                }
+                
+                if (button) button.disabled = true;
+                submitCartForm(this);
+            });
+        });
+
+        document.querySelectorAll('.cart-action-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const button = this.querySelector('button[type="submit"]');
+                if (button && button.disabled) return;
+                
+                if (button) button.disabled = true;
+                submitCartForm(this);
+            });
+        });
+
+        const clearCartForm = document.getElementById('clear-cart-form');
+        if (clearCartForm) {
+            clearCartForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const button = this.querySelector('button[type="submit"]');
+                if (button && button.disabled) return;
+                
+                if (button) button.disabled = true;
+                submitClearCartForm(this);
+            });
+        }
+    }
+
+    function submitClearCartForm(form) {
+        const formData = new FormData(form);
+        
+        const button = form.querySelector('button[type="submit"]');
+        const originalButtonContent = button ? button.innerHTML : '';
+        
+        if (button) {
+            button.innerHTML = '<div class="custom-spinner"></div>';
+            button.disabled = true;
+        }
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                reloadCartComponent().then(() => {
+                    const newClearButton = document.querySelector('#clear-cart-form button[type="submit"]');
+                    if (newClearButton) {
+                        newClearButton.innerHTML = originalButtonContent;
+                        newClearButton.disabled = false;
+                    }
+                    
+                    showToast(data.message || 'Keranjang berhasil dikosongkan', 'success');
+                }).catch(() => {
+                    if (button) {
+                        button.innerHTML = originalButtonContent;
+                        button.disabled = false;
+                    }
+                });
+            } else {
+                if (button) {
+                    button.innerHTML = originalButtonContent;
+                    button.disabled = false;
+                }
+                showToast(data.message || 'Terjadi kesalahan', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (button) {
+                button.innerHTML = originalButtonContent;
+                button.disabled = false;
+            }
+            showToast('Terjadi kesalahan', 'error');
+        });
+    }
+
+    function submitCartForm(form) {
+        const formData = new FormData(form);
+        
+        const button = form.classList.contains('cart-form') 
+            ? document.querySelector(`button[form="${form.id}"]`)
+            : form.querySelector('button[type="submit"]');
+        
+        const originalButtonContent = button ? button.innerHTML : '';
+        if (button) {
+            button.innerHTML = '<div class="custom-spinner"></div>';
+            button.disabled = true;
+        }
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                reloadCartComponent().then(() => {
+                    if (form.classList.contains('cart-form')) {
+                        form.querySelector('input[name="jumlah_produk"]').value = 0;
+                    }
+                    
+                    showToast(data.message || 'Berhasil', 'success');
+                }).catch(() => {
+                    if (button) {
+                        button.innerHTML = originalButtonContent;
+                        button.disabled = false;
+                    }
+                });
+                
+                if (form.classList.contains('cart-form') && button) {
+                    button.innerHTML = originalButtonContent;
+                    button.disabled = false;
+                }
+            } else {
+                if (button) {
+                    button.innerHTML = originalButtonContent;
+                    button.disabled = false;
+                }
+                showToast(data.message || 'Terjadi kesalahan', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (button) {
+                button.innerHTML = originalButtonContent;
+                button.disabled = false;
+            }
+            showToast('Terjadi kesalahan', 'error');
+        });
+    }
+
+    function reloadCartComponent() {
+        return fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newCartContent = doc.querySelector('#keranjang-container').innerHTML;
+                document.querySelector('#keranjang-container').innerHTML = newCartContent;
+                
+                initCartEvents();
+                hitungTotal();
+                hitungKembalian();
+            })
+            .catch(error => {
+                console.error('Error reloading cart:', error);
+                showToast('Gagal memuat ulang keranjang', 'error');
+                throw error;
+            });
+    }
+
     function loadDiskonState() {
         const saved = localStorage.getItem('diskon_reseller_aktif');
         if (saved !== null) {
@@ -374,19 +569,25 @@
         localStorage.setItem('diskon_reseller_aktif', diskonResellerAktif.toString());
     }
 
+    function formatRupiah(angka) {
+        return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     function hitungTotal() {
-        @php
-        $totalHarga = 0;
-        if (session('produk')) {
-            foreach (session('produk') as $item) {
-                $totalHarga += $item['harga_jual'] * $item['jumlah_produk'];
+        let totalHarga = 0;
+        const orderItems = document.querySelectorAll('.order-item');
+        
+        orderItems.forEach(item => {
+            const priceElement = item.querySelector('.col-3.text-end div');
+            
+            if (priceElement) {
+                const priceText = priceElement.textContent.replace(/[^\d]/g, '');
+                const price = parseInt(priceText) || 0;
+                totalHarga += price;
             }
-        }
-        @endphp
-
-        let totalHarga = {{ $totalHarga }};
+        });
+        
         let diskon = 0;
-
         if (diskonResellerAktif) {
             let persentaseDiskon = {{ $diskon_reseller ?? 0 }};
             diskon = Math.round(totalHarga * (persentaseDiskon / 100));
