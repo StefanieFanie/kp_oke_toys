@@ -8,8 +8,20 @@ use App\Models\Supplier;
 class SupplierController extends Controller
 {
     function show() {
-        $data = Supplier::orderBy('id', 'desc')->get();
+        $data = Supplier::orderBy('id', 'desc')->paginate(9);
         return view('supplier.supplier', ['supplier' => $data]);
+    }
+
+    public function cari(Request $request) {
+        $query = Supplier::orderBy('id', 'desc');
+        if ($request->filled('cari')) {
+            $query->where('nama_supplier', 'like', '%' . $request->cari . '%');
+        }
+        $data = $query->paginate(9);
+        return view('supplier.supplier', [
+            'supplier' => $data,
+            'cari' => $request->cari
+        ]);
     }
 
     public function tambah() {
