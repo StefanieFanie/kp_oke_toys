@@ -62,6 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kasir', [PenjualanController::class, 'show'])->name('kasir');
     Route::get('/kasir', [PenjualanController::class, 'cari'])->name('kasir');
     Route::get('/supplier', [SupplierController::class, 'show'])->name('supplier');
+    Route::get('/cari-supplier', [SupplierController::class, 'cari'])->name('cari-supplier');
     Route::get('/tambah-supplier', [SupplierController::class, 'tambah'])->name('tambah-supplier');
     Route::post('/simpan-supplier', [SupplierController::class, 'simpan'])->name('simpan-supplier');
     Route::get('/edit-supplier/{id}', [SupplierController::class, 'edit'])->name('edit-supplier');

@@ -7,6 +7,21 @@
         color: #2C3245 !important;
     }
 
+    .input-search {
+        position: relative;
+    }
+
+    .form-control {
+        padding-left: 42px !important;
+    }
+
+    .bi-search {
+        transform: translateY(-50%);
+        left: 10px;
+        top: 23px;
+        position: absolute;
+    }
+
     .nama-supplier {
         max-width: 250px;
         text-align: left !important;
@@ -35,6 +50,12 @@
 @section('content')
 <div>
     <h3 class="mb-4"><b>Oke Toys - Supplier</b></h3>
+    <form class="input-search" role="search" action="{{ route('cari-supplier') }}" method="GET" style="width: 100%;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#3B4B7A" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+        </svg>
+        <input type="text" id="cari" name="cari" class="form-control me-2" placeholder="Cari supplier..." value="{{ isset($cari) ? $cari : '' }}" style="height: 49px;">
+    </form>
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -86,6 +107,9 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+    <div class="d-flex justify-content-start">
+        {{ $supplier->links('pagination::bootstrap-5') }}
     </div>
     <a href="{{ route('tambah-supplier') }}" class="btn btn-tambah-supplier">+ Tambah Supplier</a>
 </div>
