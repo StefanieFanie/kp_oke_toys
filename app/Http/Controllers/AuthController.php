@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Models\Penjualan;
+use App\Models\ProdukPenjualan;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -44,6 +47,53 @@ class AuthController extends Controller
     
     public function dashboard()
     {
-        return view('dashboard');
+        $today = Carbon::today();
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        $penjualanHariIni = Penjualan::whereDate('tanggal', $today)->sum('total');
+        
+        $transaksiHariIni = Penjualan::whereDate('tanggal', $today)->count();
+        
+        $untungHariIni = ProdukPenjualan::with(['penjualan', 'produk'])
+            ->whereHas('penjualan', function ($query) use ($today) {
+                $query->whereDate('tanggal', $today);
+            })
+            ->get()
+            ->sum(function ($item) {
+                return ($item->harga_jual - $item->produk->harga_modal) * $item->jumlah;
+            });
+
+        $penjualanMingguIni = [];
+        $hariMinggu = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+        
+        for ($i = 0; $i < 7; $i++) {
+            $tanggal = $startOfWeek->copy()->addDays($i);
+            $total = Penjualan::whereDate('tanggal', $tanggal)->sum('total');
+            $penjualanMingguIni[] = $total;
+        }
+
+        $penjualanBulanIni = [];
+        for ($minggu = 1; $minggu <= 5; $minggu++) {
+            $startMinggu = $startOfMonth->copy()->addWeeks($minggu - 1);
+            $endMinggu = $startMinggu->copy()->addDays(6);
+            
+            if ($endMinggu->month != $startOfMonth->month) {
+                $endMinggu = $endOfMonth->copy();
+            }
+            
+            $total = Penjualan::whereBetween('tanggal', [$startMinggu, $endMinggu])->sum('total');
+            $penjualanBulanIni[] = $total;
+        }
+
+        return view('dashboard', [
+            'penjualanHariIni' => $penjualanHariIni,
+            'transaksiHariIni' => $transaksiHariIni,
+            'untungHariIni' => $untungHariIni,
+            'penjualanMingguIni' => $penjualanMingguIni,
+            'penjualanBulanIni' => $penjualanBulanIni
+        ]);
     }
 }

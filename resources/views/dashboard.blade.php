@@ -39,7 +39,7 @@
           <div class="card card-style">
             <div class="card-body card-info">
               <h5 class="card-title text-center"><b>Penjualan hari ini</b></h5>
-              <h3 class="card-text text-center"><b>Rp 2.000.000</b></h3>
+              <h3 class="card-text text-center"><b>Rp {{ number_format($penjualanHariIni, 0, ',', '.') }}</b></h3>
             </div>
           </div>
         </div>
@@ -47,7 +47,7 @@
           <div class="card card-style">
             <div class="card-body card-info">
               <h5 class="card-title text-center"><b>Jumlah transaksi hari ini</b></h5>
-              <h3 class="card-text text-center"><b>125</b></h3>
+              <h3 class="card-text text-center"><b>{{ $transaksiHariIni }}</b></h3>
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@
             <div class="card card-style">
               <div class="card-body card-info">
                 <h5 class="card-title text-center"><b>Untung bersih hari ini</b></h5>
-                <h3 class="card-text text-center"><b>Rp 180.000</b></h3>
+                <h3 class="card-text text-center"><b>Rp {{ number_format($untungHariIni, 0, ',', '.') }}</b></h3>
               </div>
             </div>
           </div>
@@ -92,10 +92,10 @@
     const weeklyChart = new Chart(weeklyChartCtx, {
       type: 'bar',
       data: {
-        labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+        labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
         datasets: [{
           label: 'Penjualan (Rp)',
-          data: [1500000, 1200000, 1400000, 800000, 1600000, 1000000],
+          data: @json($penjualanMingguIni),
           backgroundColor: '#B1C4FF',
           borderColor: '#8EABFF',
           borderWidth: 1
@@ -162,7 +162,7 @@
         labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4', 'Minggu 5'],
         datasets: [{
           label: 'Penjualan (Rp)',
-          data: [5000000, 8000000, 5000000, 7000000, 3000000],
+          data: @json($penjualanBulanIni),
           backgroundColor: '#5D7BC4',
           borderColor: '#4A63A0',
           borderWidth: 1
