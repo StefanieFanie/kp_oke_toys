@@ -41,6 +41,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/temp-update-stok-masuk-produk', [StokMasukController::class, 'tempUpdate'])->name('temp-update-stok-masuk-produk');
     Route::post('/temp-hapus-stok-masuk-produk', [StokMasukController::class, 'tempHapus'])->name('temp-hapus-stok-masuk-produk');
     Route::post('/simpan-stok-masuk', [StokMasukController::class, 'simpan'])->name('simpan-stok-masuk');
+    Route::get('/laporan-penjualan', [PenjualanController::class, 'tampilLaporanPenjualan'])->name('laporan-penjualan');
+    Route::get('/cari-id-penjualan', [PenjualanController::class, 'cariIDPenjualan'])->name('cari-id-penjualan');
+    Route::get('/laporan-penjualan-bulanan', [PenjualanController::class, 'tampilLaporanPenjualanBulanan'])->name('laporan-penjualan-bulanan');
     Route::get('/laporan-barang', function () {
         return view('laporan.laporan-barang');
     })->name('laporan-barang');

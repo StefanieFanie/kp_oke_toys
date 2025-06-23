@@ -31,7 +31,7 @@
                 </svg>
             </a>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Laporan Penjualan</a></li>
+                <li><a class="dropdown-item" href="{{ route('laporan-penjualan') }}">Laporan Penjualan</a></li>
                 <li><a class="dropdown-item" href="{{ route('laporan-barang') }}">Laporan Barang</a></li>
             </ul>
         </div>
