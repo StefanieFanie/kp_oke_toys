@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Produk;
 use App\Models\kategori;
+use App\Models\Penjualan;
+use App\Models\ProdukPenjualan;
 
 class PenjualanController extends Controller
 {
@@ -205,6 +208,69 @@ class PenjualanController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Jumlah produk berhasil dikurangi'
+        ]);
+    }
+
+    public function pembayaran(Request $request)
+    {
+        $request->validate([
+            'total' => 'required|numeric|min:0',
+            'bayar' => 'required|numeric|min:0',
+            'jenis_penjualan' => 'required|in:online,offline',
+            'diskon' => 'required|numeric|min:0'
+        ]);
+
+        $keranjang = session('produk', []);
+        
+        if (empty($keranjang)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Keranjang kosong'
+            ]);
+        }
+
+        $penjualan = Penjualan::create([
+            'tanggal' => now()->format('Y-m-d'),
+            'total' => $request->total,
+            'jenis_penjualan' => $request->jenis_penjualan,
+            'user_id' => Auth::id(),
+            'diskon' => $request->diskon
+        ]);
+
+        foreach ($keranjang as $item) {
+            $produk = Produk::find($item['id_produk']);
+            
+            if (!$produk) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Produk tidak ditemukan'
+                ]);
+            }
+
+            if ($produk->stok < $item['jumlah_produk']) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Stok produk ' . $produk->nama_produk . ' tidak cukup'
+                ]);
+            }
+
+            ProdukPenjualan::create([
+                'penjualan_id' => $penjualan->id,
+                'produk_id' => $item['id_produk'],
+                'jumlah' => $item['jumlah_produk'],
+                'harga_jual' => $item['harga_jual']
+            ]);
+
+            $produk->stok -= $item['jumlah_produk'];
+            $produk->save();
+        }
+
+        session()->forget('produk');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Pembayaran berhasil diproses',
+            'penjualan_id' => $penjualan->id
         ]);
     }
 }

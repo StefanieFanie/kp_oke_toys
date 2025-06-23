@@ -4,29 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Produk extends Model
+class Penjualan extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     
-    protected $table = 'produk';
+    protected $table = 'penjualan';
     
     protected $fillable = [
-        'nama_produk',
-        'foto_produk',
-        'id_kategori',
-        'stok',
-        'harga_modal',
-        'persentase_keuntungan',
-        'harga_jual'
+        'tanggal',
+        'total',
+        'jenis_penjualan',
+        'user_id',
+        'diskon'
     ];
 
-    public function kategori(){
-        return $this->belongsTo(kategori::class, 'id_kategori');
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function produkPenjualan(): HasMany
@@ -34,9 +31,9 @@ class Produk extends Model
         return $this->hasMany(ProdukPenjualan::class);
     }
 
-    public function penjualan()
+    public function produk()
     {
-        return $this->belongsToMany(Penjualan::class, 'produk_penjualan')
+        return $this->belongsToMany(Produk::class, 'produk_penjualan')
                     ->withPivot('jumlah', 'harga_jual')
                     ->withTimestamps();
     }
