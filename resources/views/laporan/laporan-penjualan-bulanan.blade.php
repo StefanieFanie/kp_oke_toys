@@ -33,7 +33,7 @@
                             Non Reseller
                         @endif
                     </td>
-                    <td>Rp {{ $item->total }}</td>
+                    <td>Rp {{ number_format($item->total, 0, ',', '.') }}</td>
                 </tr>
             @empty
             @endforelse
@@ -42,7 +42,7 @@
                     <b>Total Omset</b>
                 </td>
                 <td>
-                    Rp {{ $omset }}
+                    Rp {{ number_format($omset, 0, ',', '.') }}
                 </td>
             </tr>
         </tbody>

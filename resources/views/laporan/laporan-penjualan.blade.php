@@ -102,7 +102,7 @@
                 <tr>
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->tanggal }}</td>
-                    <td>{{ $item->total }}</td>
+                    <td>Rp {{ number_format($item->total, 0, ',', '.') }}</td>
                     <td>{{ $item->jenis_penjualan }}</td>
                     <td>
                         @if ($item->diskon == 0)
