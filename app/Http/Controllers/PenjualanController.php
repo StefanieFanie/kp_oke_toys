@@ -72,10 +72,7 @@ class PenjualanController extends Controller
         $jumlahProduk = (int) $request->jumlah_produk;
 
         if ($jumlahProduk <= 0) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Jumlah produk tidak boleh 0 atau kurang'
-            ]);
+            return redirect()->route('kasir')->with('error', 'Jumlah produk tidak boleh 0 atau kurang');
         }
 
         $produk = session('produk', []);
@@ -83,10 +80,7 @@ class PenjualanController extends Controller
         $product = Produk::find($id_produk);
 
         if (!$product) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Produk tidak ditemukan'
-            ]);
+            return redirect()->route('kasir')->with('error', 'Produk tidak ditemukan');
         }
 
         $hargaModal = $product->harga_modal;
@@ -102,10 +96,7 @@ class PenjualanController extends Controller
         }
 
         if (($existingInCart + $userInputQuantity) > $stok) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Stok tidak cukup (sudah ada '.$existingInCart.' di keranjang, stok tersedia: '.$stok.')'
-            ]);
+            return redirect()->route('kasir')->with('error', 'Stok tidak cukup (sudah ada '.$existingInCart.' di keranjang, stok tersedia: '.$stok.')');
         }
 
         $index = null;
@@ -134,20 +125,14 @@ class PenjualanController extends Controller
         }
 
         session(['produk' => $produk]);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Produk berhasil ditambahkan ke keranjang'
-        ]);
+        return redirect()->route('kasir')->with('success', 'Produk berhasil ditambahkan ke keranjang');
     }
 
 
     public function hapusSemuaProduk()
     {
         session()->forget('produk');
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Keranjang berhasil dikosongkan'
-        ]);
+        return redirect()->route('kasir')->with('success', 'Keranjang berhasil dikosongkan');
     }
 
     public function tambahJumlah($id_produk)
@@ -166,10 +151,7 @@ class PenjualanController extends Controller
         $stok = $product->stok;
 
         if (($currentQuantity + 1) > $stok) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Stok tidak cukup'
-            ]);
+            return redirect()->route('kasir')->with('error', 'Stok tidak cukup');
         }
 
         foreach ($produk as $key => $item) {
@@ -181,10 +163,7 @@ class PenjualanController extends Controller
         }
 
         session(['produk' => $produk]);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Jumlah produk berhasil ditambah'
-        ]);
+        return redirect()->route('kasir')->with('success', 'Jumlah produk berhasil ditambah');
     }
 
 
@@ -206,10 +185,7 @@ class PenjualanController extends Controller
         }
 
         session(['produk' => $produk]);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Jumlah produk berhasil dikurangi'
-        ]);
+        return redirect()->route('kasir')->with('success', 'Jumlah produk berhasil dikurangi');
     }
 
     public function pembayaran(Request $request)
@@ -224,10 +200,11 @@ class PenjualanController extends Controller
         $keranjang = session('produk', []);
 
         if (empty($keranjang)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Keranjang kosong'
-            ]);
+            return redirect()->route('kasir')->with('error', 'Keranjang kosong');
+        }
+
+        if ($request->bayar < $request->total) {
+            return redirect()->route('kasir')->with('error', 'Jumlah bayar kurang dari total harga');
         }
 
         $penjualan = Penjualan::create([
@@ -242,17 +219,11 @@ class PenjualanController extends Controller
             $produk = Produk::find($item['id_produk']);
 
             if (!$produk) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Produk tidak ditemukan'
-                ]);
+                return redirect()->route('kasir')->with('error', 'Produk tidak ditemukan');
             }
 
             if ($produk->stok < $item['jumlah_produk']) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Stok produk ' . $produk->nama_produk . ' tidak cukup'
-                ]);
+                return redirect()->route('kasir')->with('error', 'Stok produk ' . $produk->nama_produk . ' tidak cukup');
             }
 
             ProdukPenjualan::create([
@@ -268,10 +239,14 @@ class PenjualanController extends Controller
 
         session()->forget('produk');
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Pembayaran berhasil diproses',
-            'penjualan_id' => $penjualan->id
+        $kembalian = $request->bayar - $request->total;
+        return redirect()->route('kasir')->with([
+            'success' => 'Pembayaran berhasil diproses',
+            'penjualan_id' => $penjualan->id,
+            'total' => $request->total,
+            'bayar' => $request->bayar,
+            'kembalian' => $kembalian,
+            'show_payment_success' => true
         ]);
     }
 

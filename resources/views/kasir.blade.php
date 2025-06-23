@@ -224,6 +224,8 @@
                             </thead>
                             <tbody>
                                 @forelse ($produk as $item)
+                                 <form method="POST" action="{{ route('simpan-penjualan', [ 'id_produk' => $item->id]) }}" data-harga-jual="{{ $item->harga_jual }}" data-stok="{{ $item->stok }}">
+                                    @csrf
                                     <tr>
                                         <td class="align-middle text-center">
                                             <img src="{{ asset('storage/' . $item->foto_produk) }}" width="50px" height="50px">
@@ -232,17 +234,15 @@
                                         <td class="align-middle text-center">{{ $item->stok }}</td>
                                         <td class="align-middle text-center">Rp {{ $item->harga_jual }}</td>
                                         <td class="align-middle text-center" style="width: 100px;">
-                                            <form class="cart-form" id="cart-form-{{ $item->id }}" action="{{ url('/kasir/simpan') }}/{{ $item->id }}" method="POST" style="display: inline;">
-                                                @csrf
-                                                <input type="number" name="jumlah_produk" class="form-control-sm text-center jumlah-input" value="0" min="1" max="{{ $item->stok }}" style="width: 60px; margin: 0 auto;" required>
-                                            </form>
+                                         <input type="number" name="jumlah_produk" class="form-control-sm text-center" value="0" min="0" style="width: 60px; margin: 0 auto;">
                                         </td>
                                         <td class="align-middle text-center">
-                                            <button class="btn btn-md tambah-ke-keranjang" type="submit" form="cart-form-{{ $item->id }}" style="background-color: #A1C6FF; border:1px solid #8EABFF;box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
+                                            <button class="btn btn-md" type="submit" style="background-color: #A1C6FF; border:1px solid #8EABFF;box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
                                                 <i class="bi bi-basket"></i>
                                             </button>
                                         </td>
                                     </tr>
+                                    </form>
                                 @empty
 
                                 @endforelse
@@ -257,15 +257,15 @@
             <div class="card d-flex flex-column" style="border-radius:16px; border: 1px solid #8EABFF; margin-top: -41px; height: calc(100vh - 66px); box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
                 <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #3B4B7A; padding: 12px 15px; border-radius: 15px 15px 0 0;">
                     <h5 class="mb-0">Daftar Pesanan</h5>
-                    <form id="clear-cart-form" action="{{ route('hapus-semua-produk') }}" method="POST" style="display: inline;">
+                    <form action="{{ route('hapus-semua-produk') }}" method="POST" style="display: inline;">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-danger hapus-semua-keranjang" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
+                        <button type="submit" class="btn btn-sm btn-danger" style="box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
                             <i class="bi bi-trash"></i>
                         </button>
                     </form>
                 </div>
 
-<div class="card-body p-0 flex-grow-1 overflow-auto" style="background-color: #E4EBFF;" id="keranjang-container">
+<div class="card-body p-0 flex-grow-1 overflow-auto" style="background-color: #E4EBFF;">
     <div class="order-items">
         @foreach (session('produk', []) as $id_produk => $item)
         @php $product = \App\Models\produk::find($item['id_produk']); @endphp
@@ -281,16 +281,16 @@
                 </div>
                 <div class="col-3">
                     <div class="d-flex align-items-center justify-content-center">
-                        <form class="cart-action-form" action="{{ url('/kasir/kurang-jumlah') }}/{{ $item['id_produk'] }}" method="POST" style="display: inline;">
+                        <form action="{{ route('kurang-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
                             @csrf
-                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded kurang-jumlah" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                 <i class="bi bi-dash"></i>
                             </button>
                         </form>
                         <span class="mx-2 fw-bold">{{ $item['jumlah_produk'] }}</span>
-                        <form class="cart-action-form" action="{{ url('/kasir/tambah-jumlah') }}/{{ $item['id_produk'] }}" method="POST" style="display: inline;">
+                        <form action="{{ route('tambah-jumlah', ['id_produk' => $item['id_produk']]) }}" method="POST" style="display: inline;">
                             @csrf
-                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded tambah-jumlah" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded" style="width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                 <i class="bi bi-plus"></i>
                             </button>
                         </form>
@@ -308,32 +308,42 @@
 </div>
 
                 <div class="card-footer p-3 mt-auto" style="border-radius:0 0 15px 15px; border-top: 1px solid #dee2e6; background-color: #E4EBFF;">
-                    <div class="row mb-2">
-                        <div class="col-4">Diskon</div>
-                        <div class="col-8 text-end" id="diskonValue">Rp 0</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-4"><strong>Total Harga</strong></div>
-                        <div class="col-8 text-end"><strong id="totalHarga">
-                            Rp {{ number_format(session('produk') ? array_sum(array_map(function($item) {
-                                return $item['harga_jual'] * $item['jumlah_produk'];
-                            }, session('produk'))) : 0, 0, '.', '.') }}
-                        </strong></div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-4">Bayar</div>
-                        <div class="col-8 text-end">
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="text" id="inputBayar" class="form-control text-end" value="0" onkeyup="hitungKembalian()" onchange="hitungKembalian()">
+                    <form id="formPembayaran" action="{{ route('pembayaran') }}" method="POST">
+                        @csrf
+                        <div class="row mb-2">
+                            <div class="col-4">Diskon</div>
+                            <div class="col-8 text-end" id="diskonValue">Rp 0</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4"><strong>Total Harga</strong></div>
+                            <div class="col-8 text-end"><strong id="totalHarga">
+                                Rp {{ number_format(session('produk') ? array_sum(array_map(function($item) {
+                                    return $item['harga_jual'] * $item['jumlah_produk'];
+                                }, session('produk'))) : 0, 0, '.', '.') }}
+                            </strong></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4">Bayar</div>
+                            <div class="col-8 text-end">
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" id="inputBayar" name="bayar_display" class="form-control text-end" value="" placeholder="0" onkeyup="hitungKembalian()" onchange="hitungKembalian()">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-4">Kembalian</div>
-                        <div class="col-8 text-end" id="kembalianValue">Rp 0</div>
-                    </div>
-                    <button class="btn w-100 text-white" id="btnBayar" style="background-color: #1F9B30;" onclick="konfirmasiPembayaran()">Bayar</button>
+                        <div class="row mb-3">
+                            <div class="col-4">Kembalian</div>
+                            <div class="col-8 text-end" id="kembalianValue">Rp 0</div>
+                        </div>
+                        
+                        <!-- Hidden fields untuk data yang akan dikirim -->
+                        <input type="hidden" id="hiddenTotal" name="total" value="0">
+                        <input type="hidden" id="hiddenBayar" name="bayar" value="0">
+                        <input type="hidden" id="hiddenJenisPenjualan" name="jenis_penjualan" value="offline">
+                        <input type="hidden" id="hiddenDiskon" name="diskon" value="0">
+                        
+                        <button type="button" class="btn w-100 text-white" id="btnBayar" style="background-color: #1F9B30;" onclick="konfirmasiPembayaran()">Bayar</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -348,6 +358,14 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Diskon value dari controller: ', {{ $diskon_reseller ?? 0 }});
 
+        @if(session('success'))
+            showToast('{{ session('success') }}', 'success');
+        @endif
+
+        @if(session('error'))
+            showToast('{{ session('error') }}', 'error');
+        @endif
+
         @if(session('update_status'))
             showToast('{{ session('update_message') }}', '{{ session('update_status') }}');
         @endif
@@ -355,7 +373,13 @@
         loadDiskonState();
         hitungTotal();
         hitungKembalian();
-        initCartEvents();
+
+        const pesananOnlineToggle = document.getElementById('pesananOnline');
+        if (pesananOnlineToggle) {
+            pesananOnlineToggle.addEventListener('change', function() {
+                hitungKembalian();
+            });
+        }
 
         const diskonResellerToggle = document.getElementById('toggle-diskon-reseller');
         if (diskonResellerToggle) {
@@ -383,180 +407,6 @@
         });
     });
 
-    function initCartEvents() {
-        document.querySelectorAll('.cart-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const button = document.querySelector(`button[form="${this.id}"]`);
-                if (button && button.disabled) return;
-                
-                const formData = new FormData(this);
-                const jumlah = parseInt(formData.get('jumlah_produk'));
-                
-                if (jumlah <= 0) {
-                    showToast('Jumlah produk harus lebih dari 0', 'error');
-                    return;
-                }
-                
-                if (button) button.disabled = true;
-                submitCartForm(this);
-            });
-        });
-
-        document.querySelectorAll('.cart-action-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const button = this.querySelector('button[type="submit"]');
-                if (button && button.disabled) return;
-                
-                if (button) button.disabled = true;
-                submitCartForm(this);
-            });
-        });
-
-        const clearCartForm = document.getElementById('clear-cart-form');
-        if (clearCartForm) {
-            clearCartForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const button = this.querySelector('button[type="submit"]');
-                if (button && button.disabled) return;
-                
-                if (button) button.disabled = true;
-                submitClearCartForm(this);
-            });
-        }
-    }
-
-    function submitClearCartForm(form) {
-        const formData = new FormData(form);
-        
-        const button = form.querySelector('button[type="submit"]');
-        const originalButtonContent = button ? button.innerHTML : '';
-        
-        if (button) {
-            button.innerHTML = '<div class="custom-spinner"></div>';
-            button.disabled = true;
-        }
-        
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                reloadCartComponent().then(() => {
-                    const newClearButton = document.querySelector('#clear-cart-form button[type="submit"]');
-                    if (newClearButton) {
-                        newClearButton.innerHTML = originalButtonContent;
-                        newClearButton.disabled = false;
-                    }
-                    
-                    showToast(data.message || 'Keranjang berhasil dikosongkan', 'success');
-                }).catch(() => {
-                    if (button) {
-                        button.innerHTML = originalButtonContent;
-                        button.disabled = false;
-                    }
-                });
-            } else {
-                if (button) {
-                    button.innerHTML = originalButtonContent;
-                    button.disabled = false;
-                }
-                showToast(data.message || 'Terjadi kesalahan', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            if (button) {
-                button.innerHTML = originalButtonContent;
-                button.disabled = false;
-            }
-            showToast('Terjadi kesalahan', 'error');
-        });
-    }
-
-    function submitCartForm(form) {
-        const formData = new FormData(form);
-        
-        const button = form.classList.contains('cart-form') 
-            ? document.querySelector(`button[form="${form.id}"]`)
-            : form.querySelector('button[type="submit"]');
-        
-        const originalButtonContent = button ? button.innerHTML : '';
-        if (button) {
-            button.innerHTML = '<div class="custom-spinner"></div>';
-            button.disabled = true;
-        }
-        
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                reloadCartComponent().then(() => {
-                    if (form.classList.contains('cart-form')) {
-                        form.querySelector('input[name="jumlah_produk"]').value = 0;
-                    }
-                    
-                    showToast(data.message || 'Berhasil', 'success');
-                }).catch(() => {
-                    if (button) {
-                        button.innerHTML = originalButtonContent;
-                        button.disabled = false;
-                    }
-                });
-                
-                if (form.classList.contains('cart-form') && button) {
-                    button.innerHTML = originalButtonContent;
-                    button.disabled = false;
-                }
-            } else {
-                if (button) {
-                    button.innerHTML = originalButtonContent;
-                    button.disabled = false;
-                }
-                showToast(data.message || 'Terjadi kesalahan', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            if (button) {
-                button.innerHTML = originalButtonContent;
-                button.disabled = false;
-            }
-            showToast('Terjadi kesalahan', 'error');
-        });
-    }
-
-    function reloadCartComponent() {
-        return fetch(window.location.href)
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newCartContent = doc.querySelector('#keranjang-container').innerHTML;
-                document.querySelector('#keranjang-container').innerHTML = newCartContent;
-                
-                initCartEvents();
-                hitungTotal();
-                hitungKembalian();
-            })
-            .catch(error => {
-                console.error('Error reloading cart:', error);
-                showToast('Gagal memuat ulang keranjang', 'error');
-                throw error;
-            });
-    }
 
     function loadDiskonState() {
         const saved = localStorage.getItem('diskon_reseller_aktif');
@@ -614,6 +464,19 @@
         } else {
             document.getElementById('kembalianValue').textContent = 'Rp 0';
         }
+
+        document.getElementById('hiddenTotal').value = total;
+        document.getElementById('hiddenBayar').value = bayar;
+        
+        const pesananOnline = document.getElementById('pesananOnline').checked;
+        document.getElementById('hiddenJenisPenjualan').value = pesananOnline ? 'online' : 'offline';
+        
+        let diskon = 0;
+        if (diskonResellerAktif) {
+            let persentaseDiskon = {{ $diskon_reseller ?? 0 }};
+            diskon = Math.round(total * (persentaseDiskon / 100));
+        }
+        document.getElementById('hiddenDiskon').value = diskon;
 
         const btnBayar = document.getElementById('btnBayar');
         if (bayar >= total && total > 0) {
@@ -711,84 +574,10 @@
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                prosesPembayaran(total, bayar, kembalian, pesananOnline);
+                hitungKembalian();
+                
+                document.getElementById('formPembayaran').submit();
             }
-        });
-    }
-
-    function prosesPembayaran(total, bayar, kembalian, pesananOnline) {
-        const btnBayar = document.getElementById('btnBayar');
-        btnBayar.disabled = true;
-        btnBayar.innerHTML = '<div class="custom-spinner"></div> Memproses...';
-
-        const formData = new FormData();
-        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-        formData.append('total', total);
-        formData.append('bayar', bayar);
-        formData.append('jenis_penjualan', pesananOnline ? 'online' : 'offline');
-        formData.append('diskon', diskonResellerAktif ? Math.round(total * ({{ $diskon_reseller ?? 0 }} / 100)) : 0);
-
-        fetch('/kasir/pembayaran', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            btnBayar.disabled = false;
-            btnBayar.innerHTML = 'Bayar';
-
-            if (data.status === 'success') {
-                Swal.fire({
-                    title: 'Pembayaran Berhasil!',
-                    html: `
-                        <div style="text-align: center; margin: 20px 0;">
-                            <i class="bi bi-check-circle-fill" style="font-size: 60px; color: #1F9B30;"></i>
-                            <p style="margin-top: 15px; font-size: 16px;">Transaksi berhasil diproses</p>
-                            <p><strong>ID Penjualan:</strong> ${data.penjualan_id}</p>
-                            <p><strong>Total:</strong> Rp ${total.toLocaleString('id-ID')}</p>
-                            <p><strong>Kembalian:</strong> Rp ${kembalian.toLocaleString('id-ID')}</p>
-                        </div>
-                    `,
-                    icon: null,
-                    showConfirmButton: false,
-                    showCancelButton: false,
-                    allowOutsideClick: false,
-                    footer: `
-                        <div style="display: flex; gap: 10px; justify-content: center;">
-                            <button type="button" class="btn btn-secondary" onclick="tutupPopup()">
-                                <i class="bi bi-x-circle"></i> Tutup
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="">
-                                <i class="bi bi-printer"></i> Cetak Struk
-                            </button>
-                        </div>
-                    `
-                });
-
-                resetKeranjang();
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Pembayaran Gagal!',
-                    text: data.message || 'Terjadi kesalahan dalam proses pembayaran',
-                    confirmButtonColor: '#3B4B7A'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            btnBayar.disabled = false;
-            btnBayar.innerHTML = 'Bayar';
-            
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: 'Terjadi kesalahan sistem. Silakan coba lagi.',
-                confirmButtonColor: '#3B4B7A'
-            });
         });
     }
 
@@ -797,12 +586,50 @@
     }
 
     function resetKeranjang() {
-        document.getElementById('inputBayar').value = '0';
+        document.getElementById('inputBayar').value = '';
         document.getElementById('pesananOnline').checked = false;
         
         setTimeout(() => {
             window.location.reload();
         }, 1000);
     }
+
+    @if(session('show_payment_success'))
+        document.addEventListener('DOMContentLoaded', function() {
+            const total = {{ session('total', 0) }};
+            const bayar = {{ session('bayar', 0) }};
+            const kembalian = {{ session('kembalian', 0) }};
+            const penjualanId = {{ session('penjualan_id', 0) }};
+
+            Swal.fire({
+                title: 'Pembayaran Berhasil!',
+                html: `
+                    <div style="text-align: center; margin: 20px 0;">
+                        <i class="bi bi-check-circle-fill" style="font-size: 60px; color: #1F9B30;"></i>
+                        <p style="margin-top: 15px; font-size: 16px;">Transaksi berhasil diproses</p>
+                        <p><strong>ID Penjualan:</strong> ${penjualanId}</p>
+                        <p><strong>Total:</strong> Rp ${total.toLocaleString('id-ID')}</p>
+                        <p><strong>Kembalian:</strong> Rp ${kembalian.toLocaleString('id-ID')}</p>
+                    </div>
+                `,
+                icon: null,
+                showConfirmButton: false,
+                showCancelButton: false,
+                allowOutsideClick: false,
+                footer: `
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button type="button" class="btn btn-secondary" onclick="tutupPopup()">
+                            <i class="bi bi-x-circle"></i> Tutup
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="">
+                            <i class="bi bi-printer"></i> Cetak Struk
+                        </button>
+                    </div>
+                `
+            });
+
+            resetKeranjang();
+        });
+    @endif
 </script>
 @endsection
