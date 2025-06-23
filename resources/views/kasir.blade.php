@@ -333,13 +333,14 @@
                         <div class="col-4">Kembalian</div>
                         <div class="col-8 text-end" id="kembalianValue">Rp 0</div>
                     </div>
-                    <button class="btn w-100 text-white" id="btnBayar" style="background-color: #1F9B30;">Bayar</button>
+                    <button class="btn w-100 text-white" id="btnBayar" style="background-color: #1F9B30;" onclick="konfirmasiPembayaran()">Bayar</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     let diskonResellerAktif = false;
@@ -660,6 +661,148 @@
                 toast.parentElement.removeChild(toast);
             }
         }, 300);
+    }
+
+    function konfirmasiPembayaran() {
+        const total = hitungTotal();
+        let bayar = document.getElementById('inputBayar').value.replace(/\D/g, '') || 0;
+        bayar = parseInt(bayar, 10);
+
+        if (total <= 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan!',
+                text: 'Tidak ada produk di keranjang',
+                confirmButtonColor: '#3B4B7A'
+            });
+            return;
+        }
+
+        if (bayar < total) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan!',
+                text: 'Jumlah bayar kurang dari total harga',
+                confirmButtonColor: '#3B4B7A'
+            });
+            return;
+        }
+
+        const kembalian = bayar - total;
+        const pesananOnline = document.getElementById('pesananOnline').checked;
+        const jenisPenjualan = pesananOnline ? 'Online' : 'Offline';
+
+        Swal.fire({
+            title: 'Konfirmasi Pembayaran',
+            html: `
+                <div style="text-align: left; margin: 20px 0;">
+                    <p><strong>Jenis Penjualan:</strong> ${jenisPenjualan}</p>
+                    <p><strong>Total Harga:</strong> Rp ${total.toLocaleString('id-ID')}</p>
+                    <p><strong>Bayar:</strong> Rp ${bayar.toLocaleString('id-ID')}</p>
+                    <p><strong>Kembalian:</strong> Rp ${kembalian.toLocaleString('id-ID')}</p>
+                </div>
+                <p>Apakah Anda yakin ingin melanjutkan pembayaran?</p>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1F9B30',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Bayar',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                prosesPembayaran(total, bayar, kembalian, pesananOnline);
+            }
+        });
+    }
+
+    function prosesPembayaran(total, bayar, kembalian, pesananOnline) {
+        const btnBayar = document.getElementById('btnBayar');
+        btnBayar.disabled = true;
+        btnBayar.innerHTML = '<div class="custom-spinner"></div> Memproses...';
+
+        const formData = new FormData();
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+        formData.append('total', total);
+        formData.append('bayar', bayar);
+        formData.append('jenis_penjualan', pesananOnline ? 'online' : 'offline');
+        formData.append('diskon', diskonResellerAktif ? Math.round(total * ({{ $diskon_reseller ?? 0 }} / 100)) : 0);
+
+        fetch('/kasir/pembayaran', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            btnBayar.disabled = false;
+            btnBayar.innerHTML = 'Bayar';
+
+            if (data.status === 'success') {
+                Swal.fire({
+                    title: 'Pembayaran Berhasil!',
+                    html: `
+                        <div style="text-align: center; margin: 20px 0;">
+                            <i class="bi bi-check-circle-fill" style="font-size: 60px; color: #1F9B30;"></i>
+                            <p style="margin-top: 15px; font-size: 16px;">Transaksi berhasil diproses</p>
+                            <p><strong>ID Penjualan:</strong> ${data.penjualan_id}</p>
+                            <p><strong>Total:</strong> Rp ${total.toLocaleString('id-ID')}</p>
+                            <p><strong>Kembalian:</strong> Rp ${kembalian.toLocaleString('id-ID')}</p>
+                        </div>
+                    `,
+                    icon: null,
+                    showConfirmButton: false,
+                    showCancelButton: false,
+                    allowOutsideClick: false,
+                    footer: `
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button type="button" class="btn btn-secondary" onclick="tutupPopup()">
+                                <i class="bi bi-x-circle"></i> Tutup
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="">
+                                <i class="bi bi-printer"></i> Cetak Struk
+                            </button>
+                        </div>
+                    `
+                });
+
+                resetKeranjang();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Pembayaran Gagal!',
+                    text: data.message || 'Terjadi kesalahan dalam proses pembayaran',
+                    confirmButtonColor: '#3B4B7A'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            btnBayar.disabled = false;
+            btnBayar.innerHTML = 'Bayar';
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Terjadi kesalahan sistem. Silakan coba lagi.',
+                confirmButtonColor: '#3B4B7A'
+            });
+        });
+    }
+
+    function tutupPopup() {
+        Swal.close();
+    }
+
+    function resetKeranjang() {
+        document.getElementById('inputBayar').value = '0';
+        document.getElementById('pesananOnline').checked = false;
+        
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
     }
 </script>
 @endsection

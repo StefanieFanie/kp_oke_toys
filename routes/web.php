@@ -77,4 +77,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/kasir/tambah-jumlah/{id_produk}', [PenjualanController::class, 'tambahJumlah'])->name('tambah-jumlah');
     Route::post('/kasir/kurang-jumlah/{id_produk}', [PenjualanController::class, 'kurangJumlah'])->name('kurang-jumlah');
     Route::post('/kasir/hapus-semua-produk', [PenjualanController::class, 'hapusSemuaProduk'])->name('hapus-semua-produk');
+    Route::post('/kasir/pembayaran', [PenjualanController::class, 'pembayaran'])->name('pembayaran');
 });
