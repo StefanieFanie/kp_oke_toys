@@ -9,6 +9,7 @@ use App\Models\Produk;
 use App\Models\kategori;
 use App\Models\Penjualan;
 use App\Models\ProdukPenjualan;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PenjualanController extends Controller
 {
@@ -76,18 +77,18 @@ class PenjualanController extends Controller
                 'message' => 'Jumlah produk tidak boleh 0 atau kurang'
             ]);
         }
-        
+
         $produk = session('produk', []);
         $userInputQuantity = $jumlahProduk;
         $product = Produk::find($id_produk);
-        
+
         if (!$product) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Produk tidak ditemukan'
             ]);
         }
-        
+
         $hargaModal = $product->harga_modal;
         $hargaJual = $product->harga_jual;
         $stok = $product->stok;
@@ -221,7 +222,7 @@ class PenjualanController extends Controller
         ]);
 
         $keranjang = session('produk', []);
-        
+
         if (empty($keranjang)) {
             return response()->json([
                 'status' => 'error',
@@ -239,7 +240,7 @@ class PenjualanController extends Controller
 
         foreach ($keranjang as $item) {
             $produk = Produk::find($item['id_produk']);
-            
+
             if (!$produk) {
                 return response()->json([
                     'status' => 'error',
@@ -272,5 +273,77 @@ class PenjualanController extends Controller
             'message' => 'Pembayaran berhasil diproses',
             'penjualan_id' => $penjualan->id
         ]);
+    }
+
+    public function tampilLaporanPenjualan() {
+        $data = Penjualan::orderBy('id', 'desc')->paginate(9);
+        return view('laporan.laporan-penjualan', ['penjualan' => $data]);
+    }
+
+    public function cariIDPenjualan(Request $request) {
+        $query = Penjualan::orderBy('id', 'desc');
+        if ($request->filled('cari')) {
+            $query->where('id', '=', $request->cari);
+        }
+        $data = $query->paginate(9);
+        return view('laporan.laporan-penjualan', [
+            'penjualan' => $data,
+            'cari' => $request->cari
+        ]);
+    }
+
+    public function tampilLaporanPenjualanBulanan(Request $request){
+        $bulan = $request->input('bulan') ?? '01';
+        $tahun = $request->input('tahun') ?? '2024';
+        $query = Penjualan::with('produkPenjualan.produk');
+        if ($bulan && $tahun){
+            $query -> whereMonth('created_at', $bulan) -> whereYear('created_at', $tahun);
+        }
+        $penjualan = $query->get();
+        $omset = $penjualan->sum('total');
+        $penjualan_offline = $penjualan->where('jenis_penjualan', '==', 'offline');
+        $penjualan_online = $penjualan->where('jenis_penjualan', '==', 'online');
+        $total_penjualan_offline = $penjualan->where('jenis_penjualan', '==', 'offline')->sum('total');
+        $total_penjualan_online = $penjualan->where('jenis_penjualan', '==', 'online')->sum('total');
+
+        $laba_bersih_offline = 0;
+        foreach ($penjualan_offline as $of) {
+            foreach ($of -> produkPenjualan as $item) {
+                $produk = $item->produk;
+                if ($produk) {
+                    $hargaJual = $produk->harga_jual;
+                    $hargaModal = $produk->harga_modal;
+                    $jumlah = $item->jumlah;
+                    $laba_bersih_offline += ($hargaJual - $hargaModal) * $jumlah;
+                }
+            }
+        }
+
+        $laba_bersih_online = 0;
+        foreach ($penjualan_online as $on) {
+            foreach ($on -> produkPenjualan as $item) {
+                $produk = $item->produk;
+                if ($produk) {
+                    $hargaJual = $produk->harga_jual;
+                    $hargaModal = $produk->harga_modal;
+                    $jumlah = $item->jumlah;
+                    $laba_bersih_online += ($hargaJual - $hargaModal) * $jumlah;
+                }
+            }
+        }
+
+        $pdf = PDF::loadView('laporan.laporan-penjualan-bulanan', [
+            'penjualan' => $penjualan, $bulan, $tahun,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'omset' => $omset,
+            'total_penjualan_offline' => $total_penjualan_offline,
+            'total_penjualan_online' => $total_penjualan_online,
+            'laba_bersih_offline' => $laba_bersih_offline,
+            'laba_bersih_online' => $laba_bersih_online
+        ]);
+
+        $pdf -> setPaper('A4', 'portrait');
+        return $pdf->stream('laporan-penjualan.pdf');
     }
 }
