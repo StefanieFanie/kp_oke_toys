@@ -63,7 +63,15 @@ class AuthController extends Controller
             })
             ->get()
             ->sum(function ($item) {
-                return ($item->harga_jual - $item->produk->harga_modal) * $item->jumlah;
+                $hargaModal = $item->harga_modal;
+                
+                if (!$hargaModal || $hargaModal <= 0) {
+                    return 0;
+                }
+                
+                $keuntungan = ($item->harga_jual - $hargaModal) * $item->jumlah;
+                
+                return $keuntungan;
             });
 
         $penjualanMingguIni = [];

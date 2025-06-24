@@ -195,10 +195,8 @@ class PenjualanController extends Controller
     public function pembayaran(Request $request)
     {
         $request->validate([
-            'total' => 'required|numeric|min:0',
             'bayar' => 'required|numeric|min:0',
-            'jenis_penjualan' => 'required|in:online,offline',
-            'diskon' => 'required|numeric|min:0'
+            'jenis_penjualan' => 'required|in:online,offline'
         ]);
 
         $keranjang = session('produk', []);
@@ -207,16 +205,33 @@ class PenjualanController extends Controller
             return redirect()->route('kasir')->with('error', 'Keranjang kosong');
         }
 
-        if ($request->bayar < $request->total) {
+        $total = 0;
+        foreach ($keranjang as $item) {
+            $total += $item['harga_jual'] * $item['jumlah_produk'];
+        }
+
+        $persentase_diskon = 0;
+        $path = 'diskon_reseller.json';
+        if (Storage::exists($path)) {
+            $file = Storage::get($path);
+            $data_json = json_decode($file, true);
+            $persentase_diskon = $data_json['diskon_reseller'] ?? 0;
+        }
+
+        $nilai_diskon = $total * ($persentase_diskon / 100);
+
+        $total_setelah_diskon = $total - $nilai_diskon;
+
+        if ($request->bayar < $total_setelah_diskon) {
             return redirect()->route('kasir')->with('error', 'Jumlah bayar kurang dari total harga');
         }
 
         $penjualan = Penjualan::create([
             'tanggal' => now()->format('Y-m-d'),
-            'total' => $request->total,
+            'total' => $total_setelah_diskon,
             'jenis_penjualan' => $request->jenis_penjualan,
             'user_id' => Auth::id(),
-            'diskon' => $request->diskon
+            'diskon' => $nilai_diskon
         ]);
 
         foreach ($keranjang as $item) {
@@ -234,7 +249,7 @@ class PenjualanController extends Controller
                 'penjualan_id' => $penjualan->id,
                 'produk_id' => $item['id_produk'],
                 'jumlah' => $item['jumlah_produk'],
-                
+
                 'harga_modal' => $item['harga_modal'],
                 'harga_jual' => $item['harga_jual']
             ]);
@@ -245,11 +260,11 @@ class PenjualanController extends Controller
 
         session()->forget('produk');
 
-        $kembalian = $request->bayar - $request->total;
+        $kembalian = $request->bayar - $total_setelah_diskon;
         return redirect()->route('kasir')->with([
             'success' => 'Pembayaran berhasil diproses',
             'penjualan_id' => $penjualan->id,
-            'total' => $request->total,
+            'total' => $total_setelah_diskon,
             'bayar' => $request->bayar,
             'kembalian' => $kembalian,
             'show_payment_success' => true
@@ -311,26 +326,20 @@ class PenjualanController extends Controller
         $laba_bersih_offline = 0;
         foreach ($penjualan_offline as $of) {
             foreach ($of -> produkPenjualan as $item) {
-                $produk = $item->produk;
-                if ($produk) {
-                    $hargaJual = $produk->harga_jual;
-                    $hargaModal = $produk->harga_modal;
-                    $jumlah = $item->jumlah;
-                    $laba_bersih_offline += ($hargaJual - $hargaModal) * $jumlah;
-                }
+                $hargaJual = $item->harga_jual;
+                $hargaModal = $item->harga_modal;
+                $jumlah = $item->jumlah;
+                $laba_bersih_offline += ($hargaJual - $hargaModal) * $jumlah;
             }
         }
 
         $laba_bersih_online = 0;
         foreach ($penjualan_online as $on) {
             foreach ($on -> produkPenjualan as $item) {
-                $produk = $item->produk;
-                if ($produk) {
-                    $hargaJual = $produk->harga_jual;
-                    $hargaModal = $produk->harga_modal;
-                    $jumlah = $item->jumlah;
-                    $laba_bersih_online += ($hargaJual - $hargaModal) * $jumlah;
-                }
+                $hargaJual = $item->harga_jual;
+                $hargaModal = $item->harga_modal;
+                $jumlah = $item->jumlah;
+                $laba_bersih_online += ($hargaJual - $hargaModal) * $jumlah;
             }
         }
 
