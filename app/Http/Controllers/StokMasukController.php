@@ -13,7 +13,7 @@ class StokMasukController extends Controller
 {
     function show() {
         $data = StokMasuk::orderBy('id', 'desc')->get();
-        return view('stok-masuk.stok-masuk', ['stok_masuk' => $data]);
+        return view('stok-masuk.pembelian-stok', ['stok_masuk' => $data]);
     }
 
     public function showInfo($id) {

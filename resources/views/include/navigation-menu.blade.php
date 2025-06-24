@@ -12,14 +12,14 @@
             </svg>
         </a>
         <div class="dropend">
-            <a data-bs-toggle="dropdown" aria-expanded="false" class="{{ request()->routeIs('kasir', '*stok-masuk', 'edit-diskon-reseller') ? 'active' : '' }}">
+            <a data-bs-toggle="dropdown" aria-expanded="false" class="{{ request()->routeIs('kasir', 'pembelian-stok', '*stok-masuk', 'edit-diskon-reseller') ? 'active' : '' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
                     <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
                 </svg>
             </a>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{{ route('kasir') }}">Kasir</a></li>
-                <li><a class="dropdown-item" href="{{ route('stok-masuk') }}">Stok Masuk</a></li>
+                <li><a class="dropdown-item" href="{{ route('pembelian-stok') }}">Stok Masuk</a></li>
                 <li><a class="dropdown-item" href="{{ route('edit-diskon-reseller') }}">Diskon Reseller</a></li>
             </ul>
         </div>
@@ -81,12 +81,12 @@
                         <a class="nav-link {{ request()->routeIs('dashboard') ? 'active-small' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('kasir', '*stok-masuk', 'edit-diskon-reseller') ? 'active-small' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('kasir', 'pembelian-stok', '*stok-masuk', 'edit-diskon-reseller') ? 'active-small' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Transaksi
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="nav-link" href="{{ route('kasir') }}">Kasir</a></li>
-                            <li><a class="nav-link" href="{{ route('stok-masuk') }}">Stok Masuk</a></li>
+                            <li><a class="nav-link" href="{{ route('pembelian-stok') }}">Stok Masuk</a></li>
                             <li><a class="nav-link" href="{{ route('edit-diskon-reseller') }}">Diskon Reseller</a></li>
                         </ul>
                     </li>

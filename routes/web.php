@@ -24,15 +24,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/kategori', [KategoriController::class, 'show'])->name('kategori');
-    Route::get('/stok-masuk', function () {
-        return view('stok-masuk.stok-masuk');
-    })->name('stok-masuk');
+    Route::get('/pembelian-stok', function () {
+        return view('stok-masuk.pembelian-stok');
+    })->name('pembelian-stok');
     Route::get('/form-input-stok-masuk', function () {
         return view('stok-masuk.form-input-stok-masuk');
     })->name('form-input-stok-masuk');
     Route::get('/edit-diskon-reseller', [DiskonResellerController::class, 'edit'])->name('edit-diskon-reseller');
     Route::post('/update-diskon-reseller', [DiskonResellerController::class, 'update'])->name('update-diskon-reseller');
-    Route::get('/stok-masuk', [StokMasukController::class, 'show'])->name('stok-masuk');
+    Route::get('/pembelian-stok', [StokMasukController::class, 'show'])->name('pembelian-stok');
     Route::get('/rincian-stok-masuk/{id}', [StokMasukController::class, 'showInfo'])->name('rincian-stok-masuk');
     Route::post('/selesaikan-transaksi/{id}', [StokMasukController::class, 'selesaikanDanSimpan'])->name('selesaikan-transaksi');
     Route::get('/form-input-stok-masuk', [StokMasukController::class, 'input'])->name('form-input-stok-masuk');

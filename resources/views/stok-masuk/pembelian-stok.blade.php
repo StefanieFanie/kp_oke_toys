@@ -33,7 +33,7 @@
     }
 </style>
 @section('content')
-    <h3 class="mb-4"><b>Oke Toys - Stok Masuk</b></h3>
+    <h3 class="mb-4"><b>Oke Toys - Pembelian Stok</b></h3>
     <div class="table-responsive">
         <table class="table table-bordered border-secondary table-sm">
             <thead>
