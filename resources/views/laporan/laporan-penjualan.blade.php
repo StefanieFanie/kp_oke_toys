@@ -112,7 +112,7 @@
                         @endif
                     </td>
                     <td class="align-middle text-center">
-                        <button class="btn" type="button" style="width: 30px; height: 30px; background-color: #A1C6FF; border:1px solid #8EABFF; box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
+                        <a href="{{ route('rincian-penjualan', $item->id) }}" style="width: 30px; height: 30px; background-color: #A1C6FF; border:1px solid #8EABFF; box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);">
                             <p><b>i</b></p>
                         </button>
                     </td>
