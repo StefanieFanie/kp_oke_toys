@@ -16,7 +16,8 @@ class ProdukPenjualan extends Model
         'penjualan_id',
         'produk_id',
         'jumlah',
-        'harga_jual'
+        'harga_jual',
+        'harga_modal'
     ];
 
     public function penjualan(): BelongsTo

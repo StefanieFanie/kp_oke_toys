@@ -157,6 +157,7 @@ class PenjualanController extends Controller
         foreach ($produk as $key => $item) {
             if ($item['id_produk'] == $id_produk) {
                 $produk[$key]['jumlah_produk'] += 1;
+                $produk[$key]['harga_modal'] = $product->harga_modal;
                 $produk[$key]['total_harga'] = $produk[$key]['jumlah_produk'] * $produk[$key]['harga_jual'];
                 break;
             }
@@ -170,11 +171,13 @@ class PenjualanController extends Controller
     public function kurangJumlah($id_produk)
     {
         $produk = session('produk', []);
+        $product = Produk::find($id_produk);
 
         foreach ($produk as $key => $item) {
             if ($item['id_produk'] == $id_produk) {
                 if ($produk[$key]['jumlah_produk'] > 1) {
                     $produk[$key]['jumlah_produk'] -= 1;
+                    $produk[$key]['harga_modal'] = $product->harga_modal;
                     $produk[$key]['total_harga'] = $produk[$key]['jumlah_produk'] * $produk[$key]['harga_jual'];
                 } else {
                     unset($produk[$key]);
@@ -230,6 +233,8 @@ class PenjualanController extends Controller
                 'penjualan_id' => $penjualan->id,
                 'produk_id' => $item['id_produk'],
                 'jumlah' => $item['jumlah_produk'],
+                
+                'harga_modal' => $item['harga_modal'],
                 'harga_jual' => $item['harga_jual']
             ]);
 
