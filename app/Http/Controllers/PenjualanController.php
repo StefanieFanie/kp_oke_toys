@@ -234,7 +234,7 @@ class PenjualanController extends Controller
                 'penjualan_id' => $penjualan->id,
                 'produk_id' => $item['id_produk'],
                 'jumlah' => $item['jumlah_produk'],
-                
+
                 'harga_modal' => $item['harga_modal'],
                 'harga_jual' => $item['harga_jual']
             ]);
@@ -311,26 +311,20 @@ class PenjualanController extends Controller
         $laba_bersih_offline = 0;
         foreach ($penjualan_offline as $of) {
             foreach ($of -> produkPenjualan as $item) {
-                $produk = $item->produk;
-                if ($produk) {
-                    $hargaJual = $produk->harga_jual;
-                    $hargaModal = $produk->harga_modal;
-                    $jumlah = $item->jumlah;
-                    $laba_bersih_offline += ($hargaJual - $hargaModal) * $jumlah;
-                }
+                $hargaJual = $item->harga_jual;
+                $hargaModal = $item->harga_modal;
+                $jumlah = $item->jumlah;
+                $laba_bersih_offline += ($hargaJual - $hargaModal) * $jumlah;
             }
         }
 
         $laba_bersih_online = 0;
         foreach ($penjualan_online as $on) {
             foreach ($on -> produkPenjualan as $item) {
-                $produk = $item->produk;
-                if ($produk) {
-                    $hargaJual = $produk->harga_jual;
-                    $hargaModal = $produk->harga_modal;
-                    $jumlah = $item->jumlah;
-                    $laba_bersih_online += ($hargaJual - $hargaModal) * $jumlah;
-                }
+                $hargaJual = $item->harga_jual;
+                $hargaModal = $item->harga_modal;
+                $jumlah = $item->jumlah;
+                $laba_bersih_online += ($hargaJual - $hargaModal) * $jumlah;
             }
         }
 
