@@ -10,6 +10,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DiskonResellerController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\LaporanController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -45,9 +46,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/cari-id-penjualan', [PenjualanController::class, 'cariIDPenjualan'])->name('cari-id-penjualan');
     Route::get('/rincian-penjualan/{id}', [PenjualanController::class, 'tampilRincianPenjualan'])->name('rincian-penjualan');
     Route::get('/laporan-penjualan-bulanan', [PenjualanController::class, 'tampilLaporanPenjualanBulanan'])->name('laporan-penjualan-bulanan');
-    Route::get('/laporan-barang', function () {
-        return view('laporan.laporan-barang');
-    })->name('laporan-barang');
     Route::post('/kasir/simpan/{id_produk}', [PenjualanController::class, 'simpan'])->name('simpan-penjualan');
     Route::get('/produk', [ProdukController::class, 'show'])->name('produk');
     Route::get('/tambah-produk', [ProdukController::class, 'tambah'])->name('tambah-produk');
@@ -82,4 +80,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/kasir/kurang-jumlah/{id_produk}', [PenjualanController::class, 'kurangJumlah'])->name('kurang-jumlah');
     Route::post('/kasir/hapus-semua-produk', [PenjualanController::class, 'hapusSemuaProduk'])->name('hapus-semua-produk');
     Route::post('/kasir/pembayaran', [PenjualanController::class, 'pembayaran'])->name('pembayaran');
+    Route::get('/laporan-barang', [LaporanController::class, 'laporanBarang'])->name('laporan-barang');
+    Route::get('/laporan-barang/pdf', [LaporanController::class, 'downloadLaporanBarangPdf'])->name('laporan-barang-pdf');
 });
