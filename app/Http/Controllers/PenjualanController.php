@@ -9,6 +9,7 @@ use App\Models\Produk;
 use App\Models\kategori;
 use App\Models\Penjualan;
 use App\Models\ProdukPenjualan;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PenjualanController extends Controller
@@ -269,6 +270,27 @@ class PenjualanController extends Controller
         return view('laporan.laporan-penjualan', [
             'penjualan' => $data,
             'cari' => $request->cari
+        ]);
+    }
+
+    public function tampilRincianPenjualan($id) {
+        $penjualan = Penjualan::find($id);
+        $penjualan_produk = ProdukPenjualan::where('penjualan_id', $id)->with('produk')->get();
+        $produk = Produk::all();
+        $user = User::all();
+        $grouped_penjualan_produk = $penjualan_produk->groupBy(function ($item) {
+            return $item->id_produk . '-' . $item->harga_jual;
+        })->map(function ($group) {
+            $firstItem = $group->first();
+            $firstItem->jumlah_produk = $group->sum('jumlah_produk');
+            return $firstItem;
+        });
+
+        return view('laporan.rincian-penjualan', [
+            'penjualan' => $penjualan,
+            'penjualan_produk' => $grouped_penjualan_produk,
+            'produk' => $produk,
+            'user' => $user
         ]);
     }
 

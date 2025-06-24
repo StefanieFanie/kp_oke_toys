@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/simpan-stok-masuk', [StokMasukController::class, 'simpan'])->name('simpan-stok-masuk');
     Route::get('/laporan-penjualan', [PenjualanController::class, 'tampilLaporanPenjualan'])->name('laporan-penjualan');
     Route::get('/cari-id-penjualan', [PenjualanController::class, 'cariIDPenjualan'])->name('cari-id-penjualan');
+    Route::get('/rincian-penjualan/{id}', [PenjualanController::class, 'tampilRincianPenjualan'])->name('rincian-penjualan');
     Route::get('/laporan-penjualan-bulanan', [PenjualanController::class, 'tampilLaporanPenjualanBulanan'])->name('laporan-penjualan-bulanan');
     Route::get('/laporan-barang', function () {
         return view('laporan.laporan-barang');
