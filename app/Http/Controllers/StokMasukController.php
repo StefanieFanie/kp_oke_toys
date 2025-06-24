@@ -34,7 +34,7 @@ class StokMasukController extends Controller
         $data['tanggal_bayar'] = $request->tanggal_bayar;
         $data['status'] = 1;
         StokMasuk::find($id)->update($data);
-        return redirect(route('stok-masuk'))->with('success', 'Status berhasil diupdate menjadi selesai');
+        return redirect(route('pembelian-stok'))->with('success', 'Status berhasil diupdate menjadi selesai');
     }
 
     public function input() {
@@ -131,6 +131,6 @@ class StokMasukController extends Controller
         session()->forget('stok_masuk_temp');
         session()->forget('stok_masuk_produk_temp');
         session()->forget('total');
-        return redirect()->route('stok-masuk');
+        return redirect()->route('pembelian-stok');
     }
 }
