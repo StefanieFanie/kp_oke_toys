@@ -22,10 +22,16 @@ class KategoriController extends Controller
     function simpan(Request $request)
     {
         $nama_kategori = $request->nama_kategori;
-        $kategori = Kategori::where('nama_kategori', $nama_kategori)->first();
-
-        if ($kategori) {
-            return redirect()->back()->with('error', 'Nama kategori sudah ada dalam database.');
+        
+        $kategori_existing = Kategori::withTrashed()->where('nama_kategori', $nama_kategori)->first();
+        
+        if ($kategori_existing) {
+            if (!$kategori_existing->trashed()) {
+                return redirect()->back()->with('error', 'Nama kategori sudah ada dalam database.');
+            }
+            
+            $kategori_existing->restore();
+            return redirect()->route('kategori')->with('success', 'Kategori berhasil dipulihkan.');
         }
 
         $data['nama_kategori'] = $nama_kategori;
@@ -42,10 +48,32 @@ class KategoriController extends Controller
         }}
 
         public function update(Request $request,$id){
-            $data['nama_kategori'] = $request->nama_kategori;
-            Kategori::find($id)->update($data);
+            $nama_kategori = $request->nama_kategori;
+            $kategori_saat_ini = Kategori::find($id);
+            
+            if (!$kategori_saat_ini) {
+                return redirect()->route('kategori')->with('error', 'Kategori tidak ditemukan.');
+            }
+            
+            $kategori_existing = Kategori::withTrashed()
+                ->where('nama_kategori', $nama_kategori)
+                ->where('id', '!=', $id)
+                ->first();
+            
+            if ($kategori_existing) {
+                if (!$kategori_existing->trashed()) {
+                    return redirect()->back()->with('error', 'Nama kategori sudah digunakan oleh kategori lain.');
+                }
+                
+                $kategori_existing->restore();
+                $kategori_saat_ini->delete();
+                return redirect()->route('kategori')->with('success', 'Kategori berhasil dipulihkan dan kategori lama dihapus.');
+            }
+            
+            $data['nama_kategori'] = $nama_kategori;
+            $kategori_saat_ini->update($data);
 
-            return redirect(route('kategori'));
+            return redirect(route('kategori'))->with('success', 'Kategori berhasil diperbarui.');
         }
         
         public function hapus($id){
@@ -55,7 +83,7 @@ class KategoriController extends Controller
                 return redirect()->route('kategori')->with('error', 'Kategori tidak ditemukan.');
             }
             
-            $jumlah_produk = $kategori->produk()->where('is_deleted', false)->count();
+            $jumlah_produk = $kategori->produk()->whereNull('deleted_at')->count();
             
             if ($jumlah_produk > 0) {
                 return redirect()->route('kategori')->with('error', 'Tidak dapat menghapus kategori karena masih terdapat ' . $jumlah_produk . ' produk yang menggunakan kategori ini. Hapus atau ubah kategori produk terlebih dahulu.');
