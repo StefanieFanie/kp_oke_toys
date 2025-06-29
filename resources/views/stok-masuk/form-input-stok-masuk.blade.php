@@ -92,8 +92,9 @@
         </form>
     </div>
     <div id="halaman2" class="hidden">
-        <form method="POST" action="{{ route('temp-tambah-stok-masuk-produk') }}">
+        <form method="POST" id="tambahProdukStokMasuk" action="{{ route('temp-tambah-stok-masuk-produk') }}">
             @csrf
+            <h3 class="mb-4"><b>Formulir Input Stok Masuk</b></h3>
             <label for="id_produk" class="form-label"><b>Pilih produk</b></label>
             <div style="display: flex; gap: 10px">
                 <select id="select-produk" name="id_produk" placeholder="Pilih produk" autocomplete="off" style="width: 70%;">
@@ -103,7 +104,7 @@
                         <option selected disabled value="">Belum ada data produk, tambahkan data produk terlebih dahulu</option>
                     @endforelse
                 </select>
-                <input type="number" class="form-control" id="jumlah" name="jumlah" autocomplete="off" style="width: 10%; height: 35px;" required>
+                <input type="number" class="form-control" id="jumlah" name="jumlah" min="1" autocomplete="off" style="width: 10%; height: 35px;" required>
                 <button type="submit" class="btn btn1" style="float: right; width: 20%; margin-top: 0;">+ Tambah Stok Masuk</button>
             </div>
         </form>
@@ -122,11 +123,11 @@
                     @forelse ($temp_stok_masuk_produk as $i => $item)
                         <tr>
                             <td class="nama-produk">{{ $item['nama_produk'] }}</td>
-                            <td id="harga-{{ $item['id_produk'] }}">{{ $item['harga'] }}</td>
+                            <td id="harga-{{ $item['id_produk'] }}">Rp {{ number_format($item['harga'], 0, ',', '.') }}</td>
                             <td>
-                                <input type="number" id="edit-jumlah-{{ $item['id_produk'] }}" name="edit_jumlah" value="{{ $item['jumlah'] }}" class="readonly" disabled>
+                                <input type="number" id="edit-jumlah-{{ $item['id_produk'] }}" name="edit_jumlah" value="{{ $item['jumlah'] }}" min="1" class="readonly" disabled>
                             </td>
-                            <td id="sub_total-{{ $item['id_produk'] }}">{{ $item['sub_total'] }}</td>
+                            <td id="sub_total-{{ $item['id_produk'] }}">Rp {{ number_format($item['sub_total'], 0, ',', '.') }}</td>
                             <td>
                                 <button id="button-edit-{{ $item['id_produk'] }}" class="btn btn-warning" role="button" onclick="edit({{ $item['id_produk'] }})">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -161,7 +162,7 @@
                 </tbody>
             </table>
         </div>
-        <p class="mb-4"><b>Total Harga: Rp {{ number_format(session('total')) }}</b></p>
+        <p class="mb-4"><b>Total Harga: Rp {{ number_format(session('total'), 0, ',', '.') }}</b></p>
         <form method="POST" action="{{ route('simpan-stok-masuk') }}">
             @csrf
             <div class="mb-3">
@@ -186,6 +187,12 @@
     </div>
     <script>
         const input_tgl_stok_masuk = document.getElementById('tanggal');
+        const hariIni = new Date();
+        const kemarinDulu = new Date();
+        kemarinDulu.setDate(hariIni.getDate() - 2);
+        input_tgl_stok_masuk.min = kemarinDulu.toISOString().split('T')[0];
+        input_tgl_stok_masuk.max = hariIni.toISOString().split('T')[0];
+
         const pilih_supplier = document.getElementById('id_supplier');
         const button_selanjutnya = document.getElementById('button_selanjutnya');
 
@@ -211,9 +218,19 @@
                 document.getElementById('halaman2').style.display = 'none';
             }
             if (document.getElementById('select-produk')) {
-                new TomSelect("#select-produk");
+                new TomSelect("#select-produk", {
+                    allowEmptyOption: false
+                });
             }
         });
+
+        document.getElementById('tambahProdukStokMasuk').addEventListener('submit', function(e) {
+            const selectedProduk = document.getElementById('select-produk').value;
+            if (!selectedProduk) {
+                e.preventDefault();
+                alert('Produk harus dipilih')
+            }
+        })
 
         function halamanSebelumnya() {
             document.getElementById('halaman1').style.display = 'block';
@@ -245,13 +262,13 @@
             document.getElementById(`hidden-jumlah-${id_produk}`).value = input.value;
         }
 
-        const tanggalJatuhTempo = @json(session('stok_masuk_temp.tanggal'));
+        const tanggalStokMasuk = @json(session('stok_masuk_temp.tanggal'));
 
         function cekCatatanPembayaran() {
             const catatan_pembayaran = document.getElementById('catatan_pembayaran').value;
             const tanggal_jatuh_tempo = document.getElementById('tanggal_jatuh_tempo');
             if (catatan_pembayaran === 'Cash') {;
-                tanggal_jatuh_tempo.value = tanggalJatuhTempo;
+                tanggal_jatuh_tempo.value = tanggalStokMasuk;
                 tanggal_jatuh_tempo.readOnly = true;
                 metode_pembayaran.readOnly = false;
                 metode_pembayaran.value = "";
@@ -263,6 +280,11 @@
         }
 
         document.getElementById('catatan_pembayaran').addEventListener('change', cekCatatanPembayaran);
+
+        const tanggalJatuhTempoMin = new Date(tanggalStokMasuk);
+        tanggalJatuhTempoMin.setDate(tanggalJatuhTempoMin.getDate() + 1);
+        const minTanggalJatuhTempo = tanggalJatuhTempoMin.toISOString().split('T')[0];
+        document.getElementById('tanggal_jatuh_tempo').setAttribute('min', minTanggalJatuhTempo);
 
         function simpanStokMasuk() {
             sessionStorage.setItem('donePage1', 'false');

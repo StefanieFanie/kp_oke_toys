@@ -17,7 +17,7 @@
         <h3 class="mb-4"><b>Oke Toys - Rincian Stok Masuk</b></h3>
         <p>ID Stok Masuk: {{ $stok_masuk->id }}</p>
         <p>Supplier: {{ $stok_masuk->supplier->nama_supplier }}</p>
-        <p>Tanggal: {{ $stok_masuk->tanggal }}</p>
+        <p>Tanggal: {{ \Carbon\Carbon::parse($stok_masuk->tanggal)->format('d-m-Y') }}</p>
         <p>Catatan: {{ $stok_masuk->catatan }}</p>
         <form method="POST" action="{{ route('selesaikan-transaksi', $stok_masuk->id) }}">
             @csrf
@@ -28,7 +28,7 @@
             </div>
             <div class="mb-3">
                 <label for="tanggal-bayar" class="form-label">Tanggal Bayar</label>
-                <input type="date" class="form-control" id="tanggal_bayar" name="tanggal_bayar" autocomplete="off" required
+                <input type="date" min="{{ date('Y-m-d', strtotime($stok_masuk->tanggal . '+1 day')) }}" max="{{ $stok_masuk->tanggal_jatuh_tempo }}" class="form-control" id="tanggal_bayar" name="tanggal_bayar" autocomplete="off" required
                 @if ($stok_masuk->status == 1)
                     value="{{ $stok_masuk->tanggal_bayar }}" readonly
                 @endif>
