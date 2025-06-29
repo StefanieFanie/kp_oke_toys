@@ -49,11 +49,11 @@
             <tbody>
                 @forelse ($stok_masuk as $item)
                     <tr>
-                        <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ $item->tanggal }}</td>
+                        <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
                         <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ $item->supplier->nama_supplier }}</td>
-                        <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ $item->total }}</td>
+                        <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
                         <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ $item->catatan }}</td>
-                        <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ $item->tanggal_jatuh_tempo }}</td>
+                        <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ \Carbon\Carbon::parse($item->tanggal_jatuh_tempo)->format('d-m-Y') }}</td>
                         <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">
                             <a class="btn" role="button" href="{{ route('rincian-stok-masuk', $item->id) }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
