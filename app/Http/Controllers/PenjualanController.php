@@ -357,4 +357,24 @@ class PenjualanController extends Controller
         $pdf -> setPaper('A4', 'portrait');
         return $pdf->stream('laporan-penjualan.pdf');
     }
+
+    public function tampilStruk($id){
+        $penjualan = Penjualan::with(['produkPenjualan.produk', 'user'])->find($id);
+
+        if (!$penjualan) {
+            return response()->json(['error' => 'Data penjualan tidak ditemukan'], 404);
+        }
+
+        return view('struk', [
+            'penjualan' => $penjualan,
+            'items' => $penjualan->produkPenjualan->map(function($item) {
+                return [
+                    'nama_produk' => $item->produk->nama_produk ?? 'Unknown',
+                    'jumlah' => $item->jumlah,
+                    'harga_jual' => $item->harga_jual,
+                    'total' => $item->jumlah * $item->harga_jual
+                ];
+            })
+        ]);
+    }
 }
