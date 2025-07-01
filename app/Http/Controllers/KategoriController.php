@@ -31,7 +31,7 @@ class KategoriController extends Controller
             }
             
             $kategori_existing->restore();
-            return redirect()->route('kategori')->with('success', 'Kategori berhasil dipulihkan.');
+            return redirect()->route('kategori')->with('success', 'Kategori berhasil ditambahkan.');
         }
 
         $data['nama_kategori'] = $nama_kategori;
@@ -62,12 +62,12 @@ class KategoriController extends Controller
             
             if ($kategori_existing) {
                 if (!$kategori_existing->trashed()) {
-                    return redirect()->back()->with('error', 'Nama kategori sudah digunakan oleh kategori lain.');
+                    return redirect()->back()->with('error', 'Nama kategori sudah ada dalam database.');
                 }
                 
                 $kategori_existing->restore();
                 $kategori_saat_ini->delete();
-                return redirect()->route('kategori')->with('success', 'Kategori berhasil dipulihkan dan kategori lama dihapus.');
+                return redirect()->route('kategori')->with('success', 'Kategori berhasil diperbarui.');
             }
             
             $data['nama_kategori'] = $nama_kategori;
