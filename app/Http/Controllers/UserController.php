@@ -20,12 +20,28 @@ class UserController extends Controller
     function simpan(Request $request)
     {
         $request->validate([
-            'name'=>'required',
-            'email'=>'required|email|unique:users',
-            'phone_number'=>'required|unique:users',
-            'password'=>'required',
+            'name'=>'required|unique:users,name,NULL,id,deleted_at,NULL',
+            'email'=>'required|email|unique:users,email,NULL,id,deleted_at,NULL',
+            'phone_number'=>'required|unique:users,phone_number,NULL,id,deleted_at,NULL',
+            'password'=>'required|min:6',
             'role'=>'required|in:owner,kasir',
             'photo'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'name.unique' => 'Nama sudah ada dalam database.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah ada dalam database.',
+            'phone_number.required' => 'Nomor telepon wajib diisi.',
+            'phone_number.unique' => 'Nomor telepon sudah ada dalam database.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 6 karakter.',
+            'role.required' => 'Peran wajib dipilih.',
+            'role.in' => 'Peran yang dipilih tidak valid.',
+            'photo.required' => 'Foto profil wajib diupload.',
+            'photo.image' => 'Format foto tidak valid.',
+            'photo.mimes' => 'Format foto tidak valid.',
+            'photo.max' => 'Ukuran foto maksimal 2MB.'
         ]);
         
         $data['name'] = $request->name;
@@ -50,7 +66,6 @@ class UserController extends Controller
         if ($request->has('role') && !empty($request->role)) {
             $query->where('role', $request->role);
         }
-        $query->where('is_deleted', false);
 
         $data = $query->get();
         return view('user.user', ['user' => $data]);
@@ -68,19 +83,33 @@ class UserController extends Controller
     {
         $user = User::find($id);
         if ($user->role === 'owner' && $request->role === 'kasir') {
-            $ownerCount = User::where('role', 'owner')->where('is_deleted', false)->count();
+            $ownerCount = User::where('role', 'owner')->count();
             if ($ownerCount <= 1) {
                 return redirect()->back()->with('error', 'Tidak dapat mengubah peran. Setidaknya harus ada satu user dengan peran owner.')->withInput();
             }
         }
 
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,'.$id,
-            'phone_number' => 'required|unique:users,phone_number,'.$id,
+            'name' => 'required|unique:users,name,'.$id.',id,deleted_at,NULL',
+            'email' => 'required|email|unique:users,email,'.$id.',id,deleted_at,NULL',
+            'phone_number' => 'required|unique:users,phone_number,'.$id.',id,deleted_at,NULL',
             'role' => 'required|in:owner,kasir',
             'password' => 'nullable|min:6',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'name.unique' => 'Nama sudah ada dalam database.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah ada dalam database.',
+            'phone_number.required' => 'Nomor telepon wajib diisi.',
+            'phone_number.unique' => 'Nomor telepon sudah ada dalam database.',
+            'role.required' => 'Peran wajib dipilih.',
+            'role.in' => 'Peran yang dipilih tidak valid.',
+            'password.min' => 'Password minimal 6 karakter.',
+            'photo.image' => 'Format foto tidak valid.',
+            'photo.mimes' => 'Format foto tidak valid.',
+            'photo.max' => 'Ukuran foto maksimal 2MB.'
         ]);
 
         $data = [
@@ -113,8 +142,7 @@ class UserController extends Controller
         $data = User::find($id);
         
         if ($data) {
-            $data->is_deleted = true;
-            $data->save();
+            $data->delete();
         }
         return redirect(route('user'))->with('success', 'User berhasil dihapus');
     }
