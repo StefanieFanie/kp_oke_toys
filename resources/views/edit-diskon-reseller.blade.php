@@ -34,7 +34,7 @@
         @csrf
         <div class="mb-3">
             <label for="diskon_reseller" class="form-label">Diskon Reseller</label>
-            <input type="text" class="form-control" id="diskon_reseller" name="diskon_reseller" value="{{ isset($diskon_reseller) ? $diskon_reseller : '' }}" autocomplete="off" required>
+            <input type="number" max="50" class="form-control" id="diskon_reseller" name="diskon_reseller" value="{{ isset($diskon_reseller) ? $diskon_reseller : '' }}" autocomplete="off" required>
         </div>
         <button type="submit" class="btn btn-simpan">Simpan</button>
     </form>
