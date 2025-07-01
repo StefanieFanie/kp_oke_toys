@@ -228,7 +228,7 @@
             <tbody>
                 @foreach($penjualan->produkPenjualan as $item)
                 <tr>
-                    <td class="item-name">{{ Str::limit($item->produk->nama_produk ?? 'Unknown', 15) }}</td>
+                    <td class="item-name">{{ $item->produk->nama_produk }}</td>
                     <td class="item-qty">{{ $item->jumlah }}</td>
                     <td class="item-price">{{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                     <td class="item-total">{{ number_format($item->harga_jual * $item->jumlah, 0, ',', '.') }}</td>
