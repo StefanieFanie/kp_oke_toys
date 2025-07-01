@@ -335,13 +335,13 @@
                             <div class="col-4">Kembalian</div>
                             <div class="col-8 text-end" id="kembalianValue">Rp 0</div>
                         </div>
-                        
+
                         <!-- Hidden fields untuk data yang akan dikirim -->
                         <input type="hidden" id="hiddenTotal" name="total" value="0">
                         <input type="hidden" id="hiddenBayar" name="bayar" value="0">
                         <input type="hidden" id="hiddenJenisPenjualan" name="jenis_penjualan" value="offline">
                         <input type="hidden" id="hiddenDiskon" name="diskon" value="0">
-                        
+
                         <button type="button" class="btn w-100 text-white" id="btnBayar" style="background-color: #1F9B30;" onclick="konfirmasiPembayaran()">Bayar</button>
                     </form>
                 </div>
@@ -427,17 +427,17 @@
     function hitungTotal() {
         let totalHarga = 0;
         const orderItems = document.querySelectorAll('.order-item');
-        
+
         orderItems.forEach(item => {
             const priceElement = item.querySelector('.col-3.text-end div');
-            
+
             if (priceElement) {
                 const priceText = priceElement.textContent.replace(/[^\d]/g, '');
                 const price = parseInt(priceText) || 0;
                 totalHarga += price;
             }
         });
-        
+
         let diskon = 0;
         if (diskonResellerAktif) {
             let persentaseDiskon = {{ $diskon_reseller ?? 0 }};
@@ -467,10 +467,10 @@
 
         document.getElementById('hiddenTotal').value = total;
         document.getElementById('hiddenBayar').value = bayar;
-        
+
         const pesananOnline = document.getElementById('pesananOnline').checked;
         document.getElementById('hiddenJenisPenjualan').value = pesananOnline ? 'online' : 'offline';
-        
+
         let diskon = 0;
         if (diskonResellerAktif) {
             let persentaseDiskon = {{ $diskon_reseller ?? 0 }};
@@ -575,7 +575,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 hitungKembalian();
-                
+
                 document.getElementById('formPembayaran').submit();
             }
         });
@@ -588,7 +588,7 @@
     function resetKeranjang() {
         document.getElementById('inputBayar').value = '';
         document.getElementById('pesananOnline').checked = false;
-        
+
         setTimeout(() => {
             window.location.reload();
         }, 1000);
@@ -621,9 +621,9 @@
                         <button type="button" class="btn btn-secondary" onclick="tutupPopup()">
                             <i class="bi bi-x-circle"></i> Tutup
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="">
+                        <a href="{{ route('struk', ['id' => session('penjualan_id', 0)]) }}" type="button" class="btn btn-primary">
                             <i class="bi bi-printer"></i> Cetak Struk
-                        </button>
+                        </a>
                     </div>
                 `
             });

@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/rincian-penjualan/{id}', [PenjualanController::class, 'tampilRincianPenjualan'])->name('rincian-penjualan');
     Route::get('/laporan-penjualan-bulanan', [PenjualanController::class, 'tampilLaporanPenjualanBulanan'])->name('laporan-penjualan-bulanan');
     Route::post('/kasir/simpan/{id_produk}', [PenjualanController::class, 'simpan'])->name('simpan-penjualan');
+    Route::get('/kasir/struk/{id}', [PenjualanController::class, 'tampilStruk'])->name('struk');
     Route::get('/produk', [ProdukController::class, 'show'])->name('produk');
     Route::get('/tambah-produk', [ProdukController::class, 'tambah'])->name('tambah-produk');
     Route::post('/simpan-produk', [ProdukController::class, 'simpan'])->name('simpan-produk');
