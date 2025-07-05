@@ -60,16 +60,29 @@ class StokMasukController extends Controller
 
     public function tempTambah(Request $request) {
         $data_produk = Produk::find($request->id_produk);
-        $data = session('stok_masuk_produk_temp', []);
-        $data[] = [
-            'id_produk' => $data_produk->id,
-            'nama_produk' => $data_produk->nama_produk,
-            'harga' => $data_produk->harga_modal,
-            'jumlah' => $request->jumlah,
-            'sub_total' => ($data_produk->harga_modal) * ($request->jumlah),
-        ];
-        session(['stok_masuk_produk_temp' => $data]);
-        $total = collect($data)->sum('sub_total');
+        $isi_session = session()->get('stok_masuk_produk_temp', []);
+        $id_produk_input = $request->id_produk;
+        $jumlah_input = intval($request->jumlah);
+        $sudah_ada_di_session = false;
+        foreach ($isi_session as $index => $item) {
+            if ($item['id_produk'] == $id_produk_input) {
+                $isi_session[$index]['jumlah'] += $jumlah_input;
+                $isi_session[$index]['sub_total'] = $item['harga'] * $isi_session[$index]['jumlah'];
+                $sudah_ada_di_session = true;
+                break;
+            }
+        }
+        if (!$sudah_ada_di_session) {
+            $isi_session[] = [
+                'id_produk' => $data_produk->id,
+                'nama_produk' => $data_produk->nama_produk,
+                'harga' => $data_produk->harga_modal,
+                'jumlah' => $request->jumlah,
+                'sub_total' => ($data_produk->harga_modal) * ($request->jumlah),
+            ];
+        }
+        session()->put('stok_masuk_produk_temp', $isi_session);
+        $total = collect($isi_session)->sum('sub_total');
         session(['total' => $total]);
         return redirect()->route('form-input-stok-masuk');
     }
