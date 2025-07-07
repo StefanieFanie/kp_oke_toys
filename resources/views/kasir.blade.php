@@ -588,10 +588,6 @@
     function resetKeranjang() {
         document.getElementById('inputBayar').value = '';
         document.getElementById('pesananOnline').checked = false;
-
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000);
     }
 
     @if(session('show_payment_success'))
