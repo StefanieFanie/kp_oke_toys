@@ -12,7 +12,7 @@ use App\Models\StokMasukProduk;
 class StokMasukController extends Controller
 {
     function show() {
-        $data = StokMasuk::orderBy('id', 'desc')->get();
+        $data = StokMasuk::orderBy('status', 'asc')->orderBy('id', 'desc')->paginate(10);
         return view('stok-masuk.pembelian-stok', ['stok_masuk' => $data]);
     }
 

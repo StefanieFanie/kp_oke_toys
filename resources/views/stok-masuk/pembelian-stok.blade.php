@@ -71,5 +71,8 @@
             </tbody>
         </table>
     </div>
+    <div class="d-flex justify-content-center">
+        {{ $stok_masuk->links('pagination::bootstrap-5') }}
+    </div>
     <a href="{{ route('form-input-stok-masuk') }}" class="btn btn-tambah-stok-masuk">+ Tambah Stok Masuk</a>
 @endsection

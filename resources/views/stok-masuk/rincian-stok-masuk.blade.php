@@ -28,7 +28,7 @@
             </div>
             <div class="mb-3">
                 <label for="tanggal-bayar" class="form-label">Tanggal Bayar</label>
-                <input type="date" min="{{ date('Y-m-d', strtotime($stok_masuk->tanggal . '+1 day')) }}" max="{{ $stok_masuk->tanggal_jatuh_tempo }}" class="form-control" id="tanggal_bayar" name="tanggal_bayar" autocomplete="off" required
+                <input type="date" min="{{ date('Y-m-d', strtotime($stok_masuk->tanggal . '+1 day')) }}" class="form-control" id="tanggal_bayar" name="tanggal_bayar" autocomplete="off" required
                 @if ($stok_masuk->status == 1)
                     value="{{ $stok_masuk->tanggal_bayar }}" readonly
                 @endif>
