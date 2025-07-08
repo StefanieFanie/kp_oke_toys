@@ -46,7 +46,6 @@
                     <thead>
                         <tr style="text-align: center">
                             <th scope="col">Nama Produk</th>
-                            <th scope="col">Harga</th>
                             <th scope="col">Jumlah</th>
                             <th scope="col">Sub Total</th>
                         </tr>
@@ -55,7 +54,6 @@
                         @foreach ($stok_masuk_produk as $produk_masuk)
                             <tr>
                                 <td>{{ $produk_masuk->produk->nama_produk }}</td>
-                                <td>Rp {{ number_format($produk_masuk->produk->harga_modal, 0, ',', '.') }}</td>
                                 <td>{{ $produk_masuk->jumlah }}</td>
                                 <td>Rp {{ number_format($produk_masuk->sub_total, 0, ',', '.') }}</td>
                             </tr>
