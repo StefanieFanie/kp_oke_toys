@@ -210,15 +210,7 @@ class PenjualanController extends Controller
             $total += $item['harga_jual'] * $item['jumlah_produk'];
         }
 
-        $persentase_diskon = 0;
-        $path = 'diskon_reseller.json';
-        if (Storage::exists($path)) {
-            $file = Storage::get($path);
-            $data_json = json_decode($file, true);
-            $persentase_diskon = $data_json['diskon_reseller'] ?? 0;
-        }
-
-        $nilai_diskon = $total * ($persentase_diskon / 100);
+        $nilai_diskon = $request->diskon ?? 0;
 
         $total_setelah_diskon = $total - $nilai_diskon;
 

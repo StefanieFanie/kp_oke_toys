@@ -474,7 +474,17 @@
         let diskon = 0;
         if (diskonResellerAktif) {
             let persentaseDiskon = {{ $diskon_reseller ?? 0 }};
-            diskon = Math.round(total * (persentaseDiskon / 100));
+            let totalSebelumDiskon = 0;
+            const orderItems = document.querySelectorAll('.order-item');
+            orderItems.forEach(item => {
+                const priceElement = item.querySelector('.col-3.text-end div');
+                if (priceElement) {
+                    const priceText = priceElement.textContent.replace(/[^\d]/g, '');
+                    const price = parseInt(priceText) || 0;
+                    totalSebelumDiskon += price;
+                }
+            });
+            diskon = Math.round(totalSebelumDiskon * (persentaseDiskon/100));
         }
         document.getElementById('hiddenDiskon').value = diskon;
 
