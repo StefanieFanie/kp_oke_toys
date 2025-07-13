@@ -1,11 +1,19 @@
 <div class="sidebar">
     <div class="scroll-sidebar">
-        <a class="profile-icon" href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-            </svg>
-        </a><br>
+        <div class="profile-icon">
+            @php
+                $photo = Auth::user()->photo;
+                $photo_path = public_path('storage/profil/' . $photo);
+            @endphp
+            @if ($photo && file_exists($photo_path))
+                <img src="{{ asset('storage/profil/' . Auth::user()->photo) }}" width="40" height="40" style="border-radius: 50%;">
+            @else
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                </svg>
+            @endif
+        </div><br>
         <a class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
                 <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z"/>
@@ -24,7 +32,7 @@
             </ul>
         </div>
         <div class="dropend">
-            <a class="{{ request()->routeIs('laporan-*') ? 'active' : '' }}" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="{{ request()->routeIs('laporan-*', 'cari-id-penjualan', 'rincian-penjualan') ? 'active' : '' }}" data-bs-toggle="dropdown" aria-expanded="false">
                 <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
                     <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
                     <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
@@ -35,7 +43,7 @@
                 <li><a class="dropdown-item" href="{{ route('laporan-barang') }}">Laporan Barang</a></li>
             </ul>
         </div>
-        <a class="{{ request()->routeIs('*produk') ? 'active' : '' }}" href="{{ route('produk') }}">
+        <a class="{{ request()->routeIs('*produk', 'stok-rendah') ? 'active' : '' }}" href="{{ route('produk') }}">
             <svg xmlns="http://www.w3.org/2000/svg" width=auto height="27" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16">
                 <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
             </svg>
@@ -91,16 +99,16 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('laporan-*') ? 'active-small' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('laporan-*', 'cari-id-penjualan', 'rincian-penjualan') ? 'active-small' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Laporan
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="nav-link" href="#">Laporan Penjualan</a></li>
+                            <li><a class="nav-link" href="{{ route('laporan-penjualan') }}">Laporan Penjualan</a></li>
                             <li><a class="nav-link {{ request()->routeIs('laporan-barang') ? 'active-small' : '' }}" href="{{ route('laporan-barang') }}">Laporan Barang</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('*produk') ? 'active-small' : '' }}" href="{{ route('produk') }}">Produk</a>
+                        <a class="nav-link {{ request()->routeIs('*produk', 'stok-rendah') ? 'active-small' : '' }}" href="{{ route('produk') }}">Produk</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('*kategori') ? 'active-small' : '' }}" href="{{ route('kategori') }}">Kategori</a>
