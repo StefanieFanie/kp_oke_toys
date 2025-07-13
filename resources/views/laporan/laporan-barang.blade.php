@@ -195,5 +195,58 @@ function filterJenis(jenis) {
         form.submit();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const tanggalMulai = document.getElementById('downloadTanggalMulai');
+    const tanggalSelesai = document.getElementById('downloadTanggalSelesai');
+    const downloadForm = document.querySelector('#downloadModal form');
+    const downloadBtn = downloadForm.querySelector('button[type="submit"]');
+
+    function validateDates() {
+        const startDate = tanggalMulai.value;
+        const endDate = tanggalSelesai.value;
+        
+        if (startDate && endDate) {
+            if (new Date(startDate) > new Date(endDate)) {
+                tanggalMulai.setCustomValidity('Tanggal mulai tidak boleh melebihi tanggal selesai');
+                tanggalSelesai.setCustomValidity('Tanggal selesai tidak boleh kurang dari tanggal mulai');
+                return false;
+            } else {
+                tanggalMulai.setCustomValidity('');
+                tanggalSelesai.setCustomValidity('');
+                return true;
+            }
+        } else {
+            tanggalMulai.setCustomValidity('');
+            tanggalSelesai.setCustomValidity('');
+            return true;
+        }
+    }
+
+    tanggalMulai.addEventListener('change', function() {
+        validateDates();
+        if (this.value) {
+            tanggalSelesai.min = this.value;
+        } else {
+            tanggalSelesai.removeAttribute('min');
+        }
+    });
+
+    tanggalSelesai.addEventListener('change', function() {
+        validateDates();
+        if (this.value) {
+            tanggalMulai.max = this.value;
+        } else {
+            tanggalMulai.removeAttribute('max');
+        }
+    });
+
+    downloadForm.addEventListener('submit', function(e) {
+        if (!validateDates()) {
+            e.preventDefault();
+            alert('Tanggal mulai tidak boleh melebihi tanggal selesai. Silakan periksa kembali tanggal yang dipilih.');
+        }
+    });
+});
 </script>
 @endsection
