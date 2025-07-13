@@ -24,6 +24,9 @@ class ProdukController extends Controller
         $existingProduct = Produk::withTrashed()->where('nama_produk', $nama_produk)->first();
         if ($existingProduct) {
             if ($existingProduct->trashed()) {
+                if ($request->harga_modal < 0) {
+                    return redirect()->back()->with('error', 'Harga modal tidak boleh bernilai negatif');
+                }
                 if ($request->harga_jual < $request->harga_modal) {
                     return redirect()->back()->with('error', 'Harga jual tidak boleh lebih rendah daripada harga modal');
                 }
@@ -51,6 +54,9 @@ class ProdukController extends Controller
             $data['harga_modal'] = $request->harga_modal;
             $data['persentase_keuntungan'] = $request->persentase_keuntungan;
             $data['harga_jual'] = $request->harga_jual;
+            if ($data['harga_modal'] < 0) {
+                return redirect()->back()->with('error', 'Harga modal tidak boleh bernilai negatif');
+            }
             if ($data['harga_jual'] < $data['harga_modal']) {
                 return redirect()->back()->with('error', 'Harga jual tidak boleh lebih rendah daripada harga modal');
             }
@@ -91,6 +97,9 @@ class ProdukController extends Controller
         $data['harga_modal'] = $request->harga_modal;
         $data['persentase_keuntungan'] = $request->persentase_keuntungan;
         $data['harga_jual'] = $request->harga_jual;
+        if ($data['harga_modal'] < 0) {
+            return redirect()->back()->with('error', 'Harga modal tidak boleh bernilai negatif');
+        }
         if ($data['harga_jual'] < $data['harga_modal']) {
             return redirect()->back()->with('error', 'Harga jual tidak boleh lebih rendah daripada harga modal');
         }
