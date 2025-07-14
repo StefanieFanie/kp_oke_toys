@@ -71,13 +71,11 @@ class SupplierController extends Controller
         if ($existingSupplier) {
             return redirect()->back()->with('error', 'Nama supplier sudah ada');
         }
-        $supplier->update([
-            $data['nama_supplier'] = ucwords(strtolower($request->nama_supplier)),
-            $data['nomor_telepon'] = $request->nomor_telepon,
-            $data['email'] = $request->email,
-            $data['alamat'] = $request->alamat,
-            Supplier::find($id)->update($data),
-        ]);
+        $data['nama_supplier'] = ucwords(strtolower($request->nama_supplier));
+        $data['nomor_telepon'] = $request->nomor_telepon;
+        $data['email'] = $request->email;
+        $data['alamat'] = $request->alamat;
+        Supplier::find($id)->update($data);
         return redirect(route('supplier'))->with('success', 'Data supplier berhasil diperbarui.');
     }
 
