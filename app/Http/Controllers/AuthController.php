@@ -13,7 +13,11 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::check()) {
-            return redirect(route('dashboard'));
+            $user = Auth::user();
+            if ($user->role === 'kasir') {
+                return redirect()->route('kasir');
+            }
+            return redirect()->route('dashboard');
         }
         return view('auth.login');
     }
@@ -28,6 +32,12 @@ class AuthController extends Controller
         
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            
+            $user = Auth::user();
+            if ($user->role === 'kasir') {
+                return redirect()->route('kasir');
+            }
+            
             return redirect()->intended(route('dashboard'));
         }
         
@@ -47,6 +57,16 @@ class AuthController extends Controller
     
     public function dashboard()
     {
+        $user = Auth::user();
+        
+        if ($user->role === 'kasir') {
+            return redirect()->route('kasir');
+        }
+        
+        if ($user->role !== 'owner') {
+            return redirect()->route('login')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
+        
         $today = Carbon::today();
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
