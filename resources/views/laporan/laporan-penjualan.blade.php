@@ -117,9 +117,9 @@
                     <td>{{ $item->jenis_penjualan }}</td>
                     <td>
                         @if ($item->diskon == 0)
-                            Reseller
-                        @else
                             Non Reseller
+                        @else
+                            Reseller
                         @endif
                     </td>
                     <td class="align-middle text-center">
