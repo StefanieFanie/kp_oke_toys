@@ -68,8 +68,8 @@ class AuthController extends Controller
         }
         
         $today = Carbon::today();
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
+        $startOfWeek = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $endOfWeek = Carbon::now()->endOfWeek(Carbon::SUNDAY);
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
 
@@ -104,16 +104,35 @@ class AuthController extends Controller
         }
 
         $penjualanBulanIni = [];
-        for ($minggu = 1; $minggu <= 5; $minggu++) {
-            $startMinggu = $startOfMonth->copy()->addWeeks($minggu - 1);
-            $endMinggu = $startMinggu->copy()->addDays(6);
+        $currentDate = $startOfMonth->copy();
+        $mingguKe = 1;
+        
+        while ($currentDate <= $endOfMonth && $mingguKe <= 5) {
+            $startMinggu = $currentDate->copy()->startOfWeek();
             
-            if ($endMinggu->month != $startOfMonth->month) {
+            if ($startMinggu < $startOfMonth) {
+                $startMinggu = $startOfMonth->copy();
+            }
+            
+            $endMinggu = $startMinggu->copy()->endOfWeek();
+            
+            if ($endMinggu > $endOfMonth) {
                 $endMinggu = $endOfMonth->copy();
             }
             
-            $total = Penjualan::whereBetween('tanggal', [$startMinggu, $endMinggu])->sum('total');
-            $penjualanBulanIni[] = $total;
+            $total = Penjualan::whereBetween('tanggal', [
+                $startMinggu->format('Y-m-d'),
+                $endMinggu->format('Y-m-d')
+            ])->sum('total');
+            
+            $penjualanBulanIni[] = (float) $total;
+            
+            $currentDate = $endMinggu->copy()->addDay();
+            $mingguKe++;
+        }
+        
+        while (count($penjualanBulanIni) < 5) {
+            $penjualanBulanIni[] = 0;
         }
 
         return view('dashboard', [
