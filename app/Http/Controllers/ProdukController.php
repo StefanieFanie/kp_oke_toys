@@ -41,7 +41,6 @@ class ProdukController extends Controller
                     'foto_produk' => $request->hasFile('foto_produk') ? $request->file('foto_produk')->store('foto','public') : 'foto-produk/image-fill.svg',
                     'id_kategori' => $request->id_kategori,
                     'harga_modal' => $request->harga_modal,
-                    'persentase_keuntungan' => $request->persentase_keuntungan,
                     'harga_jual' => $request->harga_jual
                 ]);
             } else {
@@ -52,7 +51,6 @@ class ProdukController extends Controller
             $data['foto_produk'] = $request->hasFile('foto_produk') ? $request->file('foto_produk')->store('foto','public') : 'foto-produk/image-fill.svg';
             $data['id_kategori'] = $request->id_kategori;
             $data['harga_modal'] = $request->harga_modal;
-            $data['persentase_keuntungan'] = $request->persentase_keuntungan;
             $data['harga_jual'] = $request->harga_jual;
             if ($data['harga_modal'] < 0) {
                 return redirect()->back()->with('error', 'Harga modal tidak boleh bernilai negatif');

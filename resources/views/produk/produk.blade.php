@@ -136,8 +136,8 @@
                     <tr>
                         <td class="nama-produk">{{ $item->nama_produk }}</td>
                         <td>{{ $item->kategori->nama_kategori }}</td>
-                        <td>{{ $item->harga_modal }}</td>
-                        <td>{{ $item->harga_jual }}</td>
+                        <td>Rp {{ number_format($item->harga_modal, 0, ',', '.') }}</td>
+                        <td>Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
                         <td>{{ $item->stok }}</td>
                         <td>
                             <a class="btn btn-warning" role="button" href="{{ route('edit-produk', $item->id) }}">

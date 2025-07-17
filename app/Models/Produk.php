@@ -12,16 +12,15 @@ class Produk extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    
+
     protected $table = 'produk';
-    
+
     protected $fillable = [
         'nama_produk',
         'foto_produk',
         'id_kategori',
         'stok',
         'harga_modal',
-        'persentase_keuntungan',
         'harga_jual'
     ];
 

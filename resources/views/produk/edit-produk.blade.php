@@ -51,7 +51,7 @@
         </div>
         <div class="mb-3">
             <label for="persentase_keuntungan" class="form-label">Persentase Keuntungan (%)</label>
-            <input type="number" class="form-control" id="persentase_keuntungan" name="persentase_keuntungan" value="{{ isset($produk) ? $produk->persentase_keuntungan : '' }}" required>
+            <input type="number" class="form-control" id="persentase_keuntungan" name="persentase_keuntungan" value="{{ isset($produk) ? (($produk->harga_jual - $produk->harga_modal) / $produk->harga_modal * 100) : '' }}" required>
         </div>
         <div class="mb-3">
             <label for="harga_jual" class="form-label">Harga Jual</label>
