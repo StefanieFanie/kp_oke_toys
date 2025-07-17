@@ -220,7 +220,6 @@ class PenjualanController extends Controller
 
         $penjualan = Penjualan::create([
             'tanggal' => now()->format('Y-m-d'),
-            'total' => $total_setelah_diskon,
             'jenis_penjualan' => $request->jenis_penjualan,
             'user_id' => Auth::id(),
             'diskon' => $nilai_diskon
@@ -255,8 +254,7 @@ class PenjualanController extends Controller
         $kembalian = $request->bayar - $total_setelah_diskon;
         return redirect()->route('kasir')->with([
             'success' => 'Pembayaran berhasil diproses',
-            'penjualan_id' => $penjualan->id,
-            'total' => $total_setelah_diskon,
+            'penjualan_data' => $penjualan,
             'bayar' => $request->bayar,
             'kembalian' => $kembalian,
             'show_payment_success' => true

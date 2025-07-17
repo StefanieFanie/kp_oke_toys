@@ -337,7 +337,6 @@
                         </div>
 
                         <!-- Hidden fields untuk data yang akan dikirim -->
-                        <input type="hidden" id="hiddenTotal" name="total" value="0">
                         <input type="hidden" id="hiddenBayar" name="bayar" value="0">
                         <input type="hidden" id="hiddenJenisPenjualan" name="jenis_penjualan" value="offline">
                         <input type="hidden" id="hiddenDiskon" name="diskon" value="0">
@@ -465,7 +464,6 @@
             document.getElementById('kembalianValue').textContent = 'Rp 0';
         }
 
-        document.getElementById('hiddenTotal').value = total;
         document.getElementById('hiddenBayar').value = bayar;
 
         const pesananOnline = document.getElementById('pesananOnline').checked;
@@ -602,10 +600,21 @@
 
     @if(session('show_payment_success'))
         document.addEventListener('DOMContentLoaded', function() {
-            const total = {{ session('total', 0) }};
+            @php
+                $penjualanData = session('penjualan_data');
+                $total = 0;
+                if ($penjualanData) {
+                    foreach ($penjualanData->produkPenjualan as $item) {
+                        $total += $item->jumlah * $item->harga_jual;
+                    }
+                    $total = $total - $penjualanData->diskon;
+                }
+            @endphp
+            
+            const penjualanId = {{ $penjualanData->id ?? 0 }};
+            const total = {{ $total }};
             const bayar = {{ session('bayar', 0) }};
-            const kembalian = {{ session('kembalian', 0) }};
-            const penjualanId = {{ session('penjualan_id', 0) }};
+            const kembalian = bayar - total;
 
             Swal.fire({
                 title: 'Pembayaran Berhasil!',
@@ -627,7 +636,7 @@
                         <button type="button" class="btn btn-secondary" onclick="tutupPopup()">
                             <i class="bi bi-x-circle"></i> Tutup
                         </button>
-                        <a href="{{ route('struk', ['id' => session('penjualan_id', 0)]) }}" type="button" class="btn btn-primary">
+                        <a href="{{ route('struk', ['id' => $penjualanData->id ?? 0]) }}" type="button" class="btn btn-primary">
                             <i class="bi bi-printer"></i> Cetak Struk
                         </a>
                     </div>
