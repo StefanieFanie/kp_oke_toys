@@ -21,7 +21,28 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $omset = 0;
+                $total_penjualan_offline = 0;
+                $total_penjualan_online = 0;
+            @endphp
             @forelse ($penjualan as $item)
+                @php
+                    $total = 0;
+                    foreach ($item->produkPenjualan as $produk) {
+                        $total += $produk->harga_jual * $produk->jumlah;
+                    };
+                    $omset += $total;
+                @endphp
+                @if ($item->jenis_penjualan == "offline")
+                    @php
+                        $total_penjualan_offline += $total;
+                    @endphp
+                @else
+                    @php
+                        $total_penjualan_online += $total;
+                    @endphp
+                @endif
                 <tr>
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->tanggal }}</td>
@@ -33,7 +54,7 @@
                             Non Reseller
                         @endif
                     </td>
-                    <td>Rp {{ number_format($item->total, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($total, 0, ',', '.') }}</td>
                 </tr>
             @empty
             @endforelse

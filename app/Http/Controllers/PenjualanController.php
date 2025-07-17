@@ -262,7 +262,7 @@ class PenjualanController extends Controller
     }
 
     public function tampilLaporanPenjualan() {
-        $data = Penjualan::orderBy('id', 'desc')->paginate(9);
+        $data = Penjualan::with('produkPenjualan')->orderBy('id', 'desc')->paginate(9);
         return view('laporan.laporan-penjualan', ['penjualan' => $data]);
     }
 
@@ -301,17 +301,14 @@ class PenjualanController extends Controller
 
     public function tampilLaporanPenjualanBulanan(Request $request){
         $bulan = $request->input('bulan') ?? '01';
-        $tahun = $request->input('tahun') ?? '2024';
-        $query = Penjualan::with('produkPenjualan.produk');
+        $tahun = $request->input('tahun') ?? '2025';
+        $query = Penjualan::with('produkPenjualan');
         if ($bulan && $tahun){
             $query -> whereMonth('created_at', $bulan) -> whereYear('created_at', $tahun);
         }
         $penjualan = $query->get();
-        $omset = $penjualan->sum('total');
         $penjualan_offline = $penjualan->where('jenis_penjualan', '==', 'offline');
         $penjualan_online = $penjualan->where('jenis_penjualan', '==', 'online');
-        $total_penjualan_offline = $penjualan->where('jenis_penjualan', '==', 'offline')->sum('total');
-        $total_penjualan_online = $penjualan->where('jenis_penjualan', '==', 'online')->sum('total');
 
         $laba_bersih_offline = 0;
         foreach ($penjualan_offline as $of) {
@@ -337,9 +334,6 @@ class PenjualanController extends Controller
             'penjualan' => $penjualan, $bulan, $tahun,
             'bulan' => $bulan,
             'tahun' => $tahun,
-            'omset' => $omset,
-            'total_penjualan_offline' => $total_penjualan_offline,
-            'total_penjualan_online' => $total_penjualan_online,
             'laba_bersih_offline' => $laba_bersih_offline,
             'laba_bersih_online' => $laba_bersih_online
         ]);

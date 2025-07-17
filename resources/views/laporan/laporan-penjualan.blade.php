@@ -77,7 +77,7 @@
             </div>
             <div class="col-md-auto">
                 <select id="tahun" name="tahun" class="form-control me-2" value="{{ isset($tahun) ? $tahun : '' }}" style="width: 200px">
-                    @for ($i=2024; $i<=date('Y'); $i++)
+                    @for ($i=2025; $i<=date('Y'); $i++)
                         <option value="{{ $i }}">{{ $i }}</option>
                     @endfor
                 </select>
@@ -109,11 +109,17 @@
             </tr>
         </thead>
         @forelse ($penjualan as $item)
+            @php
+                $total = 0;
+                foreach ($item->produkPenjualan as $produk) {
+                    $total += $produk->harga_jual * $produk->jumlah;
+                }
+            @endphp
             <tbody>
                 <tr>
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->tanggal }}</td>
-                    <td>Rp {{ number_format($item->total, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($total, 0, ',', '.') }}</td>
                     <td>{{ $item->jenis_penjualan }}</td>
                     <td>
                         @if ($item->diskon == 0)

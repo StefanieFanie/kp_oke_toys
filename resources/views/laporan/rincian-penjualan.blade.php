@@ -19,6 +19,9 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $total = 0;
+            @endphp
             @foreach ($penjualan_produk as $item)
                 <tr>
                     <td>{{ $item->produk->nama_produk }}</td>
@@ -27,6 +30,9 @@
                     <td>{{ $item->jumlah }}</td>
                     <td>Rp {{ number_format($item->harga_jual * $item->jumlah, 0, ',', '.') }}</td>
                 </tr>
+                @php
+                    $total += ($item->harga_jual * $item->jumlah);
+                @endphp
             @endforeach
             <tr>
                 <td colspan="4"><b>Diskon Reseller</b></td>
@@ -34,7 +40,7 @@
             </tr>
             <tr>
                 <td colspan="4"><b>Total Penjualan</b></td>
-                <td>Rp {{ number_format($penjualan->total, 0, ',', '.') }}</td>
+                <td>Rp {{ number_format(($total-$penjualan->diskon), 0, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
