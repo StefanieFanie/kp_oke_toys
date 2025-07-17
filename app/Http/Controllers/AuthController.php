@@ -73,7 +73,18 @@ class AuthController extends Controller
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
 
-        $penjualanHariIni = Penjualan::whereDate('tanggal', $today)->sum('total');
+        $penjualanHariIni = 0;
+        $penjualanHariIniData = Penjualan::with('produkPenjualan')
+            ->whereDate('tanggal', $today)
+            ->get();
+        
+        foreach ($penjualanHariIniData as $penjualan) {
+            $subtotal = 0;
+            foreach ($penjualan->produkPenjualan as $item) {
+                $subtotal += $item->jumlah * $item->harga_jual;
+            }
+            $penjualanHariIni += $subtotal - $penjualan->diskon;
+        }
         
         $transaksiHariIni = Penjualan::whereDate('tanggal', $today)->count();
         
@@ -99,8 +110,20 @@ class AuthController extends Controller
         
         for ($i = 0; $i < 7; $i++) {
             $tanggal = $startOfWeek->copy()->addDays($i);
-            $total = Penjualan::whereDate('tanggal', $tanggal)->sum('total');
-            $penjualanMingguIni[] = $total;
+            $penjualanHari = Penjualan::with('produkPenjualan')
+                ->whereDate('tanggal', $tanggal)
+                ->get();
+            
+            $totalHari = 0;
+            foreach ($penjualanHari as $penjualan) {
+                $subtotal = 0;
+                foreach ($penjualan->produkPenjualan as $item) {
+                    $subtotal += $item->jumlah * $item->harga_jual;
+                }
+                $totalHari += $subtotal - $penjualan->diskon;
+            }
+            
+            $penjualanMingguIni[] = $totalHari;
         }
 
         $penjualanBulanIni = [];
@@ -120,12 +143,23 @@ class AuthController extends Controller
                 $endMinggu = $endOfMonth->copy();
             }
             
-            $total = Penjualan::whereBetween('tanggal', [
-                $startMinggu->format('Y-m-d'),
-                $endMinggu->format('Y-m-d')
-            ])->sum('total');
+            $penjualanMinggu = Penjualan::with('produkPenjualan')
+                ->whereBetween('tanggal', [
+                    $startMinggu->format('Y-m-d'),
+                    $endMinggu->format('Y-m-d')
+                ])
+                ->get();
             
-            $penjualanBulanIni[] = (float) $total;
+            $totalMinggu = 0;
+            foreach ($penjualanMinggu as $penjualan) {
+                $subtotal = 0;
+                foreach ($penjualan->produkPenjualan as $item) {
+                    $subtotal += $item->jumlah * $item->harga_jual;
+                }
+                $totalMinggu += $subtotal - $penjualan->diskon;
+            }
+            
+            $penjualanBulanIni[] = (float) $totalMinggu;
             
             $currentDate = $endMinggu->copy()->addDay();
             $mingguKe++;
