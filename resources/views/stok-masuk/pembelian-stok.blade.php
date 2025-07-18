@@ -49,9 +49,15 @@
             <tbody>
                 @forelse ($stok_masuk as $item)
                     <tr>
+                        @php
+                            $total = 0;
+                            foreach ($item->stokMasukProduk as $produkMasuk) {
+                                $total += $produkMasuk->jumlah * $produkMasuk->harga;
+                            }
+                        @endphp
                         <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
                         <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ $item->supplier->nama_supplier }}</td>
-                        <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
+                        <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">Rp {{ number_format($total, 0, ',', '.') }}</td>
                         <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ $item->catatan }}</td>
                         <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">{{ \Carbon\Carbon::parse($item->tanggal_jatuh_tempo)->format('d-m-Y') }}</td>
                         <td class="{{ $item->status === 0 ? 'belum-lunas' : '' }}">

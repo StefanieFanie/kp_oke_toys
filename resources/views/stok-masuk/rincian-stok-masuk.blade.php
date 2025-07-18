@@ -46,22 +46,30 @@
                     <thead>
                         <tr style="text-align: center">
                             <th scope="col">Nama Produk</th>
+                            <th scope="col">Harga</th>
                             <th scope="col">Jumlah</th>
                             <th scope="col">Sub Total</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $total = 0;
+                        @endphp
                         @foreach ($stok_masuk_produk as $produk_masuk)
                             <tr>
                                 <td>{{ $produk_masuk->produk->nama_produk }}</td>
+                                <td>Rp {{ number_format($produk_masuk->harga, 0, ',', '.') }}</td>
                                 <td>{{ $produk_masuk->jumlah }}</td>
-                                <td>Rp {{ number_format($produk_masuk->sub_total, 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($produk_masuk->harga * $produk_masuk->jumlah, 0, ',', '.') }}</td>
                             </tr>
+                            @php
+                                $total += ($produk_masuk->harga * $produk_masuk->jumlah);
+                            @endphp
                         @endforeach
                     </tbody>
                 </table>
             </div>
-            <h5>Total: Rp {{ number_format($stok_masuk->total, 0, ',', '.') }}</h5>
+            <h5>Total: Rp {{ number_format($total, 0, ',', '.') }}</h5>
             <br>
             @if ($stok_masuk->status == 0)
                 <button type="submit" class="btn button-selesai" id="button_selesai" disabled>Selesaikan dan Simpan</a>

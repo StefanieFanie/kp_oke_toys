@@ -12,7 +12,7 @@ use App\Models\StokMasukProduk;
 class StokMasukController extends Controller
 {
     function show() {
-        $data = StokMasuk::orderBy('status', 'asc')->orderBy('id', 'desc')->paginate(10);
+        $data = StokMasuk::with('stokMasukProduk')->orderBy('status', 'asc')->orderBy('id', 'desc')->paginate(10);
         return view('stok-masuk.pembelian-stok', ['stok_masuk' => $data]);
     }
 
@@ -122,7 +122,6 @@ class StokMasukController extends Controller
         $stok_masuk = StokMasuk::create([
             'tanggal' => $temp_stok_masuk['tanggal'],
             'id_supplier' => $temp_stok_masuk['id_supplier'],
-            'total' => $total,
             'catatan' => $catatan,
             'tanggal_jatuh_tempo' => $request->tanggal_jatuh_tempo,
             'tanggal_bayar' => $request->tanggal_jatuh_tempo,
@@ -134,7 +133,7 @@ class StokMasukController extends Controller
                 'id_stok_masuk' => $stok_masuk->id,
                 'id_produk' => $item['id_produk'],
                 'jumlah' => $item['jumlah'],
-                'sub_total' => $item['sub_total'],
+                'harga' => $item['harga'],
             ]);
             $stok = Produk::where('id', $item['id_produk'])->value('stok');
             Produk::find($item['id_produk'])->update([
