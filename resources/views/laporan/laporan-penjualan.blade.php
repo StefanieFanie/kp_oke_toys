@@ -119,7 +119,7 @@
                 <tr>
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->tanggal }}</td>
-                    <td>Rp {{ number_format($total, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($total-$item->diskon, 0, ',', '.') }}</td>
                     <td>{{ $item->jenis_penjualan }}</td>
                     <td>
                         @if ($item->diskon == 0)
